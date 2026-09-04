@@ -275,28 +275,131 @@ the helper with those sources. Ayumi adds no Z80 playback cost or cartridge
 storage: the generated program writes the AY registers directly on the TS2068,
 and an emulator supplies its own sound-chip emulation when running the demo.
 
-### Searching the register settings
+<a id="how-the-optimizer-searches"></a>
 
-`ayfit` starts with the harmonic result, then searches tone periods, volume,
-noise, mixer and envelope settings. Every candidate starts from the same
-saved AY/filter state; the chosen state continues into the next frame.
-After local search, full-clip rescoring accepts whole-clip, four-frame and
-single-frame proposals only when the objective improves. Joint mode also
-requires neither average waveform nor average spectrum score to worsen.
+### How the optimizer searches
 
-The joint objective includes spectral/RMS error, bounded phase-aligned
-waveform correlation (about ±5 ms), periodicity and roughness. It does not
-promise absolute sample-phase identity. `--passes` controls search effort;
-`--low` and `--high` control source filtering and objective bands. Defaults
-use 80 Hz as the lower cutoff. The baseline harmonic pipeline uses 6.5 kHz
-as its upper analysis limit. These are analysis limits, not promised audio
-bandwidth. There is no intelligibility model or guarantee of a global optimum.
+`ayfit` starts with the harmonic converter's register stream as its baseline.
+It renders that stream through Ayumi, resamples the source to 44,100 Hz, and
+matches the source's overall AC level to the rendered baseline. This makes
+the comparison focus on reproduction rather than an arbitrary recording level.
+The normal `filtered` profile applies the source filters; the `berzerk` effect
+profile uses the unfiltered source.
 
-The output circuit approximation uses a feedback shelf near 11,702.57 Hz
-and a DC/high-frequency gain ratio of 7.8. Those come from the previous
-R14=680kΩ, C23=20 pF, R15=100kΩ interpretation. `--feedback-cutoff` and
-`--feedback-gain` expose those assumptions. It is not a measured complete
-speaker/amplifier response and does not model diode or speaker nonlinearities.
+The search proceeds one 60.1145 Hz frame at a time (about 16.6 ms). For each
+frame it starts from the harmonic settings and tries a batch of alternatives,
+including the preceding frame's selected settings. Most alternatives change
+one setting at a time; envelope trials change several related settings
+together. Every alternative is rendered from the same saved chip/filter
+state. The lowest-scoring candidate becomes the starting point for the next
+pass. After the last pass, its state is committed before moving forward.
+
+`--passes` accepts **1–4** passes per frame, default **3**, or **2** with the
+`berzerk` profile. Frames whose baseline volume registers are all zero skip
+candidate search. Extra passes increase conversion time, but leave the player
+and its update rate unchanged. This is a deterministic local search, not an
+exhaustive search or a guarantee of the best possible encoding.
+
+### What it searches, and the bounds
+
+| Setting | Candidates tried by the current implementation |
+|---|---|
+| Tone period, per channel | Current period multiplied by 0.94, 0.98, 1.02 and 1.06, plus 18 logarithmically spaced periods across **1–4095**; rounded and clamped. It does not try every period. |
+| Volume, per channel | All **16 fixed levels (0–15)**, plus **16** as the register value selecting envelope-controlled volume. |
+| Tone/noise mixer | Toggle tone, noise, or both for one channel at a time. |
+| Shared noise period | Every value **1–31**. |
+| Shared envelope shape | All **16 shape codes**, each tried with the channel's existing mixer setting and with both tone and noise disabled so the envelope alone controls the output level. |
+| Initial envelope period | Derived from the estimated source pitch, with a **70 Hz** pitch floor and **96 Hz** fallback when pitch is unavailable; uses a divisor of 512 for shapes 10/14 and 256 otherwise, clamped to **1–65535**. |
+| Envelope-period refinement | When the current candidate uses an envelope: period offsets **−2, −1, +1, +2**, plus 20 logarithmically spaced periods across **1–65535**, without restarting its shape. Keeping the shape unchanged is also an explicit option. |
+
+Noise and envelope generators are shared across channels, so changing them
+can affect several voices. `--channels` restricts playback to **1, 2 or 3**
+channels; unused channels are forced silent in every candidate. Tone, noise
+and envelope period zero are not newly proposed by these searches. The
+`R13=255` value in the stream means “do not write the envelope shape,” not an
+additional hardware shape.
+
+The simulator currently fixes the AY clock at **1,764,750 Hz** and register
+updates at **60.1145 Hz**. The optimizer does not search clock rate, frame
+duration, channel count, source filters or output-circuit parameters. Those
+are fixed settings for each run, with channel count and filters chosen by
+the caller.
+
+### How a candidate is scored and accepted
+
+Each local comparison includes the candidate frame and **1,024 preceding
+audio samples** (about 23.2 ms), giving roughly a 40 ms window. There is no
+future-frame look-ahead. A Hann window and 4,096-point FFT feed **48 logarithmic
+frequency bands**. The spectral error compresses magnitudes so weaker speech
+bands still matter, and includes an RMS-level penalty with safeguards against
+nearly silent windows dominating the score.
+
+`--objective spectrum` uses that spectral/RMS score. The default `joint`
+objective adds three terms:
+
+- **Waveform similarity**, weight **0.8**: correlation with one time offset
+  limited to **±220 samples (about ±5 ms)**. It does not time-warp the signal or
+  require absolute phase alignment. This term is disabled for near silence.
+- **Periodicity**, weight **0.5**: compare normalized autocorrelation over
+  lags **16–640 samples**, to help preserve repeating tone structure.
+- **Roughness**, weight **0.1**: compare the RMS difference between adjacent
+  samples, discouraging inappropriate rapid fluctuations.
+
+The resulting proposal is then checked against the original baseline. The
+optimizer first tries replacing the whole clip, then successive four-frame
+blocks, then individual frames. Each trial is re-rendered from the beginning
+and scored across the complete clip, accounting for the state changes it
+causes later. A replacement is kept only if the current whole-clip objective
+improves. In `joint` mode, average spectral and waveform errors must also
+individually not worsen (apart from a tiny numerical tolerance). These are
+clip-average safeguards; an individual frame or a listener's perception can
+still get worse. If no proposals pass, the baseline is retained.
+
+The `berzerk` profile deliberately uses spectral scoring to generate local
+candidates, then the requested objective for final acceptance—`joint` by
+default. The conversion metadata records both objectives, before/after
+component scores, candidate evaluations and accepted blocks.
+
+### Frequency limits and model assumptions
+
+`--low` defaults to **80 Hz**. `--high` defaults to **7,000 Hz** for `ayfit`,
+or **6,500 Hz** for the normal `aydemo` profile; the `berzerk` profile uses
+7,000 Hz. These set the objective's analysis band and, for the filtered
+profile, source filtering. The input filter also limits its upper cutoff to
+43% of the source sample rate. These are analysis choices, not guaranteed
+output bandwidth or bounds on the tone periods the search may propose.
+
+The output-circuit approximation uses a feedback shelf near **11,702.57 Hz**
+and a DC/high-frequency gain ratio of **7.8**, based on the previous
+R14=680 kΩ, C23=20 pF, R15=100 kΩ interpretation. `--feedback-cutoff` must be
+positive and `--feedback-gain` at least 1; they configure the model, not
+parameters automatically fitted by the optimizer. This is not a measured
+complete amplifier/speaker response and omits diode and speaker nonlinearities.
+
+### Possible future improvements
+
+These are development possibilities, not features of the current tools:
+
+- **Search several frames together.** Retain a small set of promising paths
+  and evaluate upcoming frames before choosing one. This could improve
+  envelope continuity and fast laser sweeps that a greedy frame decision misses.
+- **Refine promising parameter regions.** Try finer period steps, coupled
+  channel changes and multiple starting solutions, instead of relying on the
+  fixed coarse grids and a single harmonic seed.
+- **Improve perceptual scoring.** Combine short windows for transients with
+  longer windows for low pitches, and tune speech/effect objectives against
+  controlled listening comparisons. A lower numerical error alone does not
+  establish better intelligibility or a more convincing effect.
+- **Calibrate the output model.** Compare real-machine recordings with the
+  renderer, fit the amplifier response, and test sensitivity to initial chip
+  phase and hardware variation so improvements transfer more reliably.
+- **Include storage and playback cost.** Penalize unnecessary register
+  changes or compressed size, and explore compact channel-specific streams.
+  The current optimizer minimizes audio error, not ROM bytes or CPU time.
+- **Reduce conversion time.** Cache duplicate candidate evaluations and
+  reuse intermediate rendering where state permits. Whole-clip acceptance
+  checks currently re-render every trial, which becomes expensive for longer
+  recordings.
 
 ## Comparing Audio2AY
 

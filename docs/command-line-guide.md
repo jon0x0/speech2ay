@@ -67,6 +67,9 @@ not create a runtime tape-file loader. See [calling examples](integration.md).
 
 ## Parameter optimization: ayfit
 
+See [how the optimizer searches](./speaking-with-the-ts2068.md#how-the-optimizer-searches)
+for candidate ranges, scoring, acceptance checks, limitations and future improvements.
+
 ```powershell
 python ayfit.py 'voice.wav' --channels 3 --ayumi $ayumi --passes 3 --objective joint --format tap dck --out build/voice-fit
 python ayfit.py 'laser.wav' --channels 2 --ayumi $ayumi --passes 2 --objective spectrum --low 80 --high 6500 --format bin --separate-data --data-origin 0xd000 --out build/laser-fit

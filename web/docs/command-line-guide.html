@@ -43,6 +43,8 @@ stops playback before replacing active data, and calls <code>ay_tick</code> once
 display interrupt. Separate-data mode supports binary output only; it does
 not create a runtime tape-file loader. See <a href="integration.html">calling examples</a>.</p>
 <h2>Parameter optimization: ayfit</h2>
+<p>See <a href="speaking-with-the-ts2068.html#how-the-optimizer-searches">how the optimizer searches</a>
+for candidate ranges, scoring, acceptance checks, limitations and future improvements.</p>
 <pre><code class="language-powershell">python ayfit.py &#39;voice.wav&#39; --channels 3 --ayumi $ayumi --passes 3 --objective joint --format tap dck --out build/voice-fit
 python ayfit.py &#39;laser.wav&#39; --channels 2 --ayumi $ayumi --passes 2 --objective spectrum --low 80 --high 6500 --format bin --separate-data --data-origin 0xd000 --out build/laser-fit
 </code></pre>
