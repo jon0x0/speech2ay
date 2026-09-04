@@ -55,10 +55,22 @@ Four small Python commands for speech **and sound effects**, sharing documented 
 
 | Command | Purpose |
 |---|---|
-| `audio2aydac.py` | Packed AY4 at 5/6 kHz and DPCM3 at 6 kHz |
-| `speech2ay.py` | Pitch/harmonic spectral fitting with 1, 2 or 3 AY channels |
+| `audio2aydac.py` | Packed AY4 digitized audio at 5/6 kHz and DPCM3 at 6 kHz |
+| `speech2ay.py` | Pitch/harmonic spectral fitting with 1, 2 or 3 AY channels, playable with 60 Hz AY parameter updates |
 | `ayfit.py` | Optional stateful waveform/spectrum parameter search using Ayumi |
-| `aydemo.py` | Keyboard-selectable multi-sample, multi-codec demonstrations |
+| `aydemo.py` | TS2068 Audio Lab: keyboard-selectable multi-sample, multi-codec demonstrations |
+
+`audio2aydac` prepares digitized audio samples and generates callable code and
+data, including TAP and DCK programs. It uses the AY chip's **4-bit volume DAC**,
+compensated for its nonlinear, approximately logarithmic volume levels. AY4
+stores 4-bit sample codes; DPCM3 stores 3-bit differences that reconstruct those
+4-bit DAC codes, rather than changing the chip into a 3-bit DAC.
+
+`speech2ay` fits speech and sound effects to harmonic AY synthesis parameters
+that can be played with **60 Hz parameter updates**. `ayfit` searches for further
+improvements using spectrum, waveform, roughness and periodicity criteria.
+Its acceptance checks can retain the harmonic baseline; an improved numerical
+fit does not guarantee better listening quality.
 
 Requires Python 3.10+, `pip install -r requirements.txt`, and Pasmo. Set
 `PASMO` to the assembler executable or pass `--pasmo PATH`. On Windows, an
@@ -89,9 +101,25 @@ Read the [command-line guide](docs/command-line-guide.md) for copy-and-paste
 examples for every utility, optimizer options, separate data, and the exact
 four-sample comparison build.
 
+## TS2068 Audio Lab
+
+`aydemo` generates codec comparisons as TAP programs or TS2068 cartridge images
+for a real or emulated machine. Switch between samples and codecs, play each
+version, and optionally view an original-versus-modeled spectrum comparison
+in the expanded cartridge demo.
+
+The moving sine-wave animation continues during playback to demonstrate that
+audio can coexist with other work. Digitized playback has a strict sample
+schedule: animation or game work must fit its available instruction slots,
+because jitter or overruns cause audio artifacts. Harmonic and optimized AY
+playback use the approximately 60 Hz display interrupt, which can interrupt
+foreground game logic or animation while interrupts are enabled. Audio updates
+and any other interrupt work must still fit within the frame's time budget.
+
 `aydemo --format dck` builds one expanded 64K comparison cartridge. **O/P**
 selects the sample, **Q/A** selects the codec, and **Space** plays. The original
-small font has 16-pixel row spacing; each codec displays stored ROM bytes.
+small font has 16-pixel row spacing. Unstarred counts show actual stored ROM
+bytes; starred counts estimate a compact one- or two-channel format.
 Lossless storage compression is expanded before playback; stream byte counts
 are also recorded in the manifest.
 A sine wave moves during playback. Add `--optimize 1 2 3 --ayumi PATH` for
