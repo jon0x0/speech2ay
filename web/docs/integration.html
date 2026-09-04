@@ -1,0 +1,129 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Calling and loading audio · speech2ay</title><link rel="stylesheet" href="../style.css"></head><body><header class="site-header"><a class="brand" href="../index.html">speech2ay<span> / Audio Lab</span></a><nav><a href="../index.html">Play the demo</a><a href="https://github.com/jon0x0/speech2ay">GitHub ↗</a></nav></header><main class="article"><h1>Calling and loading audio</h1>
+<p>Read the output&#39;s <code>manifest.json</code>; addresses are not interchangeable between
+<code>module.bin</code> and <code>player.bin</code>. Assemble again to relocate. Public API offsets
+from <code>audio_api</code> are fixed: init +0, AY4/5k +3, AY4/6k +6, DPCM3/6k +9,
+AY start +12, AY tick +15, stop +18. Generated absolute labels are also exported.</p>
+<h2>Memory and hardware</h2>
+<p>CPU: 3,528,000 Hz. AY: 1,764,750 Hz. Display interrupts: approximately
+60.1145 Hz; Fuse frame arithmetic uses 58,688 T states. Select register using
+<code>$FFF5</code>, write using <code>$FFF6</code>. This player owns sound registers R0–R13 and
+does not write joystick registers R14/15. One/two-channel conversion mutes
+unused channels; it is not a concurrent AY channel mixer.</p>
+<p>Small cartridge demo: HSR <code>$30</code> selects <strong>only</strong> contiguous DOCK4/5 ROM. <code>$FF=0</code>
+selects HOME/DOCK rather than EXROM and primary display. Screen files occupy
+HOME <code>$4000–$5AFF</code> and <code>$6000–$7AFF</code>; second display is demo animation only.
+Native RAM <code>$C000–$C100</code> is the 257-byte IM2 table, with JP stub at <code>$C1C1</code>
+outside it. State is <code>$C210–$C21F</code>. Stack starts at <code>$FF00</code>. Never select DOCK6
+or DOCK7 for writable state. DCK descriptors 1/3 are not a substitute for
+physical RAM on PicoROM-28.</p>
+<h3>Expanded comparison cartridge</h3>
+<p><code>aydemo</code> DCK output uses contiguous ROM chunks 0–7 (64K total). Resident code
+is in chunk 4, <code>$8000–$9FFF</code>; baseline HSR is <code>$10</code>. The other seven chunks
+provide 56K of audio and compressed UI storage. All DCK chunk descriptors are
+ROM-only (<code>2</code>), and <code>picorom.bin</code> maps bytes directly to physical addresses.</p>
+<p>Native HOME RAM holds wave frames at <code>$A000–$A7FF</code>, the IM2 table at
+<code>$C000–$C100</code>, the vector stub at <code>$C1C1</code>, audio state at <code>$C210</code>, wave pointer
+at <code>$C220</code> and UI state from <code>$C230</code>. SP starts at <code>$C2FF</code>. Audio records are
+copied to <code>$D000–$FDFF</code> before playback (maximum 11,776 bytes per record).
+The normal bounce buffer is <code>$7C00</code>; source chunk 3 instead uses <code>$5B00</code>.</p>
+<p>Version 3 uses optional lossless LZ storage for audio records. A compressed
+record is first loaded at <code>$D000</code>, copied to native <code>$A800–$BFFF</code> (maximum 6144
+bytes), then expanded back into <code>$D000–$FDFF</code>. All banks are restored before
+decompression. The original playback stream is preserved exactly. Records
+that do not shrink or do not fit the compression scratch buffer remain raw.
+The record-compression table and <code>ui+16</code> hold the flag; source code documents
+literal/backreference tokens. Menu RLE records remain unchanged. Manifest
+<code>stored_bytes</code> is physical audio storage; <code>bytes</code> is the expanded stream size.</p>
+<p>The loader disables interrupts, selects a source chunk alongside resident
+chunk 4, copies at most 256 bytes to the bounce buffer, then restores HSR10.
+Only after restoring HOME does it access the stack or copy into the destination
+staging buffer. This matters especially when chunk 6 hides the native stack
+and state. The banked interval uses straight-line OUT/LDIR/OUT, without CALL,
+PUSH, POP or interrupt access. Each record may cross physical chunk boundaries.</p>
+<p>The AY/idle ISR copies a 128-byte sine frame per display interrupt. DAC loops
+copy eight bytes at a time within balanced 340 T slots, only during the known
+early blanking window. Keep the supplied ISR synchronization and timing checks
+when changing this demonstration. These are prepared sine frames, not decoded
+audio visualizations. The standalone callable runtime has no such dependency.</p>
+<p>With <code>--spectra</code>, <code>ui+17</code> holds the S-key view selector. Each audio entry has
+an additional 64-byte record: 32 original and 32 modeled FFT bar heights 0..31.
+A shared RLE lower-screen template follows those records. The selected codec
+glyph row is copied to the spectrum header; two-pixel bars are drawn in native
+screen RAM while interrupts are disabled during redraw. This occurs only on
+selection/view changes. Spectrum state and loading add no per-sample or ISR
+work. <code>spectrum_ui.py</code> documents the display addresses; <code>spectrum.py</code> performs
+all FFT/modeling work on the host. Spectrum screens still need the declined
+Fuse check; assembly and offline numerical validation are separate evidence.</p>
+<p>Callable modules do not initialize IM2, change HSR, or initialize SP. They
+reserve the 16 state bytes above. <code>audio_init</code>/<code>audio_stop</code> restore standard
+video mode via port <code>$FF</code>; applications using ECM should adapt that line or
+restore their mode after stopping. Exact DAC timing assumes code, data and
+stack in uncontended address ranges (normally <code>$8000+</code>, or ROM below <code>$4000</code>).
+The builder allows code origins <code>$6000–$BFFF</code>, but <code>$6000–$7FFF</code> is contended
+and is not suitable for cycle-exact DAC or the two-screen demo.</p>
+<h2>Digitized playback</h2>
+<pre><code class="language-asm">        di                      ; do not interrupt a sample loop
+        ld hl,CLIP_ADDRESS      ; manifest data_address + entry offset
+        ld de,CLIP_GROUPS       ; entry count, NOT bytes or samples
+        call DAC6               ; use generated api.inc
+        ei                      ; caller decides whether to re-enable
+</code></pre>
+<p>The routine initializes the AY DAC, plays, silences it and returns with
+interrupts still disabled. It clobbers AF, BC, DE, HL, IX and IY. A zero count
+returns without reading data. <code>audio_init</code> and the DAC functions preserve no
+general caller state beyond their explicitly supplied parameters. No code is
+self-modifying and all mutable state lives in HOME RAM.</p>
+<p>AY4 low-nibble-first: AY4/5k groups are 10 samples/5 bytes; AY4/6k groups are
+2 samples/byte. Both store actual logarithmic AY volume codes, not linear PCM.
+DPCM3 groups are eight 3-bit codes packed LSB-first into three bytes. Start
+at AY level 11; each code indexes deltas <code>[-4,-2,-1,0,1,2,4,8]</code>, then clamp
+to 0..15. Reset the accumulator for each clip. Tail groups are padded; the
+manifest reports exact source sample count and padded duration.</p>
+<p>The standalone reference routines have no animation. The demo&#39;s generated
+variant waits for one display interrupt and keeps a 58,688 T software phase.
+It changes display file only in the first group after frame wrap, within
+blanking, and balances both branches to 133 T. Its ISR must complete in under
+about 5,000 T before the initial return; the provided demo does. Do not copy
+this synchronization into an arbitrary application&#39;s long ISR unchanged.
+Unrestricted memory/ULA writes inside DAC padding introduce contention.</p>
+<h2>Interrupt AY playback</h2>
+<pre><code class="language-asm">        di
+        call AUDIO_INIT
+        ld hl,CLIP_ADDRESS
+        ld de,FRAME_COUNT
+        call AY_START
+        ei
+
+my_isr:
+        push af
+        push bc
+        push de
+        push hl
+        call AY_TICK             ; once per DISPLAY interrupt, not game tick
+        ; Other bounded interrupt work can go here.
+        pop hl
+        pop de
+        pop bc
+        pop af
+        ei
+        reti
+</code></pre>
+<p><code>ay_start</code>: HL=data, DE=frame count; publishes state and active flag under DI.
+<code>ay_tick</code>: clobbers AF/BC/DE/HL; does not enable interrupts or return with RETI.
+Each frame contains exactly 14 bytes R0..R13. <strong>R13=255 means skip the write</strong>,
+not write 255: a real shape write restarts the shared envelope. It writes
+R0..12 every active update. The last frame remains sounding for one full
+interrupt period; the following tick silences the chip and clears active
+byte <code>$C215</code>. Poll that byte, not remaining-frame count, for completion.
+<code>audio_stop</code> immediately mutes volumes and clears active/count. Serialize
+init/start/stop with the ISR. No nesting or thread safety is provided.</p>
+<h2>Reloadable libraries</h2>
+<p>With <code>--separate-data</code>, load <code>module.bin</code> at <code>origin</code> and <code>data.bin</code> at the
+manifest&#39;s <code>data_address</code>. Stop playback under DI before overwriting data.
+The default data buffer is <code>$D000</code>; the builder accepts <code>$C300–$FDFF</code> and
+checks the entire payload fits. Reload another generated raw data file there,
+then call the appropriate entry with the <strong>new</strong> offset/count. No absolute
+pointers are stored in the payload, so its contents are location independent.
+The module is origin-dependent. Loading tape/files and keeping metadata are
+the host program&#39;s responsibility; never load over an actively playing buffer.</p>
+</main></body></html>

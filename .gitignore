@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.egg-info/
+.venv/
+.pytest_cache/
+*.wav
+*.fmf
+*.dck
+*.tap
+*.bin
+*.exe
+
+# Intentional browser demo assets and bundled TSRun system ROMs
+!web/assets/*.dck
+!web/assets/*.bin
+
+node_modules/

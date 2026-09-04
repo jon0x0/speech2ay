@@ -1,0 +1,6 @@
+{
+  "name": "speech2ay-web-docs",
+  "private": true,
+  "scripts": {"build:web": "node scripts/render_web_docs.mjs"},
+  "devDependencies": {"marked": "17.0.5"}
+}

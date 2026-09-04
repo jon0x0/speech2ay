@@ -1,0 +1,157 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>speech2ay: command-line guide · speech2ay</title><link rel="stylesheet" href="../style.css"></head><body><header class="site-header"><a class="brand" href="../index.html">speech2ay<span> / Audio Lab</span></a><nav><a href="../index.html">Play the demo</a><a href="https://github.com/jon0x0/speech2ay">GitHub ↗</a></nav></header><main class="article"><h1>speech2ay: command-line guide</h1>
+<p>Run these commands from the root of the <code>speech2ay</code> repository. Input files must be
+uncompressed 8-bit or 16-bit PCM WAV. Stereo is averaged to mono. A directory
+input includes its WAV files, sorted by name, without recursive searching.
+Quote paths containing spaces. Output directories are created automatically.</p>
+<p>The included assembly playback code is written for the Z80 processor, and the tools generate example executable programs specifically for the TS2068 computer. The AY conversion algorithms can also be used for other machines with suitable playback code and timing adaptations.</p>
+<h2>Setup (PowerShell)</h2>
+<pre><code class="language-powershell">python -m pip install -r requirements.txt
+$env:PASMO = &#39;C:\tools\pasmo.exe&#39;
+$ayumi = &#39;C:\tools\audio2ay\ayumi&#39;
+$audio2ay = &#39;C:\tools\audio2ay\bin\audio2ay.exe&#39;
+</code></pre>
+<p>Replace these example paths with your installations. An extensionless Linux
+Pasmo executable on Windows is run through WSL. Alternatively use a native
+Pasmo executable. Every command accepts <code>--pasmo PATH</code> instead of <code>PASMO</code>.
+Only optimization requires Ayumi source and GCC (<code>--gcc PATH</code> if necessary).
+Only the Audio2AY comparison requires the upstream Audio2AY executable.</p>
+<h2>Digitized audio: audio2aydac</h2>
+<p>Generate all three digitized formats with callable code at <code>$9000</code>:</p>
+<pre><code class="language-powershell">python audio2aydac.py &#39;voice.wav&#39; &#39;laser.wav&#39; --codecs ay4-5k ay4-6k dpcm3-6k --format bin --origin 0x9000 --out build/digitized
+</code></pre>
+<p>Generate a tape demo and a cartridge demo for one codec:</p>
+<pre><code class="language-powershell">python audio2aydac.py &#39;voice.wav&#39; --codecs dpcm3-6k --format tap dck --out build/dpcm-demo
+</code></pre>
+<p>AY4 stores two 4-bit samples per byte. DPCM3 stores eight 3-bit deltas in
+three bytes. The sample rates are fixed by the codec name; there is no
+arbitrary rate switch. These players block until playback finishes.</p>
+<h2>Harmonic synthesis: speech2ay</h2>
+<p>Choose one, two or three AY channels:</p>
+<pre><code class="language-powershell">python speech2ay.py &#39;voice.wav&#39; --channels 1 --format tap --out build/voice-one-channel
+python speech2ay.py &#39;laser.wav&#39; --channels 2 --format dck --out build/laser-two-channel
+python speech2ay.py samples --channels 3 --format bin --origin 0x9000 --out build/harmonic-library
+</code></pre>
+<p>Separate executable code from replaceable audio data:</p>
+<pre><code class="language-powershell">python speech2ay.py &#39;voice.wav&#39; &#39;laser.wav&#39; --channels 3 --format bin --origin 0x9000 --separate-data --data-origin 0xd000 --out build/separate
+</code></pre>
+<p>Load <code>module.bin</code> at the manifest&#39;s code origin and <code>data.bin</code> at <code>$D000</code>.
+Use the entry&#39;s offset and count in <code>manifest.json</code> to select a clip. Read
+<code>api.inc</code> for routine addresses. Your application loads replacement files,
+stops playback before replacing active data, and calls <code>ay_tick</code> once per
+display interrupt. Separate-data mode supports binary output only; it does
+not create a runtime tape-file loader. See <a href="integration.html">calling examples</a>.</p>
+<h2>Parameter optimization: ayfit</h2>
+<pre><code class="language-powershell">python ayfit.py &#39;voice.wav&#39; --channels 3 --ayumi $ayumi --passes 3 --objective joint --format tap dck --out build/voice-fit
+python ayfit.py &#39;laser.wav&#39; --channels 2 --ayumi $ayumi --passes 2 --objective spectrum --low 80 --high 6500 --format bin --separate-data --data-origin 0xd000 --out build/laser-fit
+</code></pre>
+<p><code>--passes</code> accepts 1–4, default 3. More passes cost conversion time, without
+changing playback CPU cost. <code>joint</code> uses waveform and spectral criteria;
+<code>spectrum</code> emphasizes spectral matching. Acceptance checks can retain the
+baseline where a candidate fails the full-clip criteria. Listen to the result;
+an optimizer score does not establish better intelligibility.</p>
+<p>All tools accept <code>--low</code> (default 80 Hz) and <code>--high</code> (6500 Hz, or 7000 Hz
+for <code>ayfit</code>). The optimizer also accepts <code>--feedback-cutoff</code> (11702.57 Hz)
+and <code>--feedback-gain</code> (7.8), which describe the modeled output filter, not
+playback volume choices. Start with defaults unless comparing a measured
+machine/filter model. Rebuild in a fresh output directory if changing external
+Ayumi or Audio2AY installations, to avoid reusing cached conversion results.</p>
+<h2>TS2068 Audio Lab: multi-codec demo (aydemo)</h2>
+<h3>Reproducing the Berzerk effect sound</h3>
+<p>The default <code>filtered</code> profile uses filtered audio for analysis. The
+<code>berzerk</code> profile reproduces the original game&#39;s effect pipeline: unfiltered
+input, the original band estimator clock 1774400 Hz, two search passes,
+spectrum candidate search and joint full-clip acceptance by default. The
+actual AY renderer/playback clock remains 1764750 Hz. It preserves the legacy
+estimator constant deliberately for reproducibility, not as a hardware claim.
+The source is not prefiltered in this profile; <code>--low/--high</code> apply to optimizer
+scoring bands. Default scoring range is 80–7000 Hz. Explicit passes/objective
+options override their defaults. This profile is not a guarantee for every clip.</p>
+<pre><code class="language-powershell">python speech2ay.py &#39;Laser.wav&#39; --channels 3 --profile berzerk --format dck --out build/laser-harmonic
+python ayfit.py &#39;Laser.wav&#39; --channels 3 --profile berzerk --ayumi $ayumi --format dck --out build/laser-optimized
+python aydemo.py samples --sample-profile Laser=berzerk --optimize 1 2 3 --ayumi $ayumi --audio2ay $audio2ay --out build/lab
+</code></pre>
+<p>The last command changes only Laser&#39;s AY synthesis profile; its DAC and
+Audio2AY modes keep their existing conversion. The name matches the WAV stem.
+The restored three-channel optimizer output was checked byte-for-byte against
+the game&#39;s saved 31.wav stream (602 bytes), rather than judged by score alone.</p>
+<h3>Original versus achieved spectra</h3>
+<pre><code class="language-powershell">python aydemo.py samples --spectra --sample-profile Laser=berzerk --optimize 1 2 3 --ayumi $ayumi --audio2ay $audio2ay --out build/lab-fft
+</code></pre>
+<p>Press <strong>S</strong> to switch between codec list and spectra. O/P selects the sample,
+Q/A selects the codec, and Space plays in either view. The upper plot is the
+original recording and the lower plot is modeled output. Both show 32 logarithmic
+frequency bands from 80 Hz to 7 kHz, using a shared 48 dB display range. Each signal
+is DC-removed and independently RMS-normalized: these are spectral-shape
+comparisons, not loudness measurements. They average the whole clip, so they
+cannot show transient timing or distinguish every audible difference.</p>
+<p>Python computes 2048-point FFTs with approximately 46 ms Hann windows and 50%
+overlap, then averages power density in each band. Original audio uses its
+native sample rate (no invented spectrum above Nyquist). Achieved AY audio is
+rendered by Ayumi at 44100 Hz; DAC audio uses the decoded nonlinear AY levels
+with sample-and-hold reconstruction. Both include the approximate feedback
+shelf described in the article. Neither includes a measured speaker response.
+This is modeled achieved output, not microphone feedback from the machine.</p>
+<p>Only 64 one-byte heights per sample/codec pair are stored. No FFT runs on the
+TS2068, and no additional work is inserted into playback or its interrupt.
+Plots redraw on selection/view changes. The full 40-choice display adds about
+3.5 KB of payload and less than 1 KB of resident code. <code>spectrum-N.png/.scr</code> are
+build previews; FFT powers and assumptions are recorded in <code>manifest.json</code>.
+Read validation.md: numerical FFT checks pass, but the new spectrum screen&#39;s
+Fuse verification was declined and is not yet established.</p>
+<p>To add plots to an existing build without re-encoding audio:</p>
+<pre><code class="language-powershell">python examples/add_spectra.py --base build/comparison-v4 --samples build/wargames-samples --ayumi $ayumi --pasmo $env:PASMO --out build/comparison-v5
+</code></pre>
+<p>The helper checks each original WAV hash against the cartridge manifest.
+To update just a subset of codecs, generate a replacement comparison with
+those same WAV names, then use <code>examples/update_comparison.py --base OLD --replacement NEW --out UPDATED --pasmo PATH</code>. It preserves other entries
+byte-for-byte and rejects source WAV mismatches. To change a whole sample,
+add <code>--replace-sample Laser</code>; the replacement must contain every existing
+codec for that sample, all encoded from the same new WAV. Include <code>--spectra</code>
+when generating the replacement to refresh its spectrum displays too.</p>
+<p>Six standard choices per sample (three digitized and three harmonic):</p>
+<pre><code class="language-powershell">python aydemo.py samples --format dck --out build/comparison
+</code></pre>
+<p>Ten choices per sample, adding all optimized channel counts and Audio2AY:</p>
+<pre><code class="language-powershell">python aydemo.py samples --optimize 1 2 3 --ayumi $ayumi --audio2ay $audio2ay --format dck --out build/comparison-all
+</code></pre>
+<p>Limit the comparison if a collection exceeds capacity:</p>
+<pre><code class="language-powershell">python aydemo.py &#39;voice.wav&#39; --codecs ay4-6k harmonic3 --optimize 3 --ayumi $ayumi --audio2ay $audio2ay --out build/short-comparison
+</code></pre>
+<p>The DCK comparison is one 64K ROM image, with 8K reserved for resident code
+and 56K for audio and menu records. Each decoded record must fit the 11,776-byte
+native RAM staging area. Oversized collections fail explicitly. The on-screen
+<code>ROM bytes</code> counts are stored audio payload sizes after lossless compression,
+excluding shared code, menus and record descriptors. The manifest distinguishes
+<code>bytes</code> (playback stream) from <code>stored_bytes</code> (cartridge storage). Decompression
+happens before playback and does not alter codec quality or sample timing.
+O/P selects samples, Q/A selects codecs, and Space plays.
+Release the key before the next action. Codec pages change automatically.
+The original small font is retained, with 16-pixel row spacing. A moving sine
+wave indicates playback activity; it is not an oscilloscope.</p>
+<p>Outputs are <code>comparison.dck</code> for an emulator and <code>picorom.bin</code> for physical
+ROM programming. The latter is exactly 65,536 bytes, without a DCK header.
+<code>player.asm</code>, symbols, manifest and menu preview PNGs accompany the image.
+The memory layout is documented in <a href="integration.html">integration</a>.</p>
+<p>For a tape collection:</p>
+<pre><code class="language-powershell">python aydemo.py samples --format tap --out build/tape-comparison
+</code></pre>
+<p>TAP uses the smaller demo layout and splits large collections into volumes;
+Q/A selects a sample/codec combination and Space plays. The expanded sample
+selector and scrolling animation belong to the 64K DCK comparison. Individual
+converter DCK demos also use the smaller layout. Multiple requested formats
+are placed in separate output directories; consult <code>index.json</code> for legacy
+volumes. The DCK-only comparison uses its <code>manifest.json</code> instead.</p>
+<h2>Reproduce the four-sample comparison</h2>
+<p>Prepare Intruder Alert (18.wav, 100 ms silence, 08.wav), Humanoid (15.wav),
+player laser (30.wav), and the supplied Wargames clip. Explicit input order makes
+Laser sample 3 and Shall we play a game sample 4:</p>
+<pre><code class="language-powershell">python examples/prepare_samples.py --samples &#39;C:\audio\berzerk-samples&#39; --wargames &#39;C:\audio\war_games_play_a_game.wav&#39; --out build/wargames-samples
+python aydemo.py &#39;build/wargames-samples/Intruder Alert.wav&#39; &#39;build/wargames-samples/Humanoid.wav&#39; &#39;build/wargames-samples/Laser.wav&#39; &#39;build/wargames-samples/Shall we play a game.wav&#39; --sample-profile Laser=berzerk --spectra --optimize 1 2 3 --ayumi $ayumi --audio2ay $audio2ay --format dck --out build/comparison-v5
+</code></pre>
+<p>This produces 40 choices, including all ten codecs for the full Wargames clip.
+Read <code>manifest.json</code> for the build&#39;s actual ROM use. Original recordings are not
+bundled with the reusable tools. The helper requires NumPy and the same PCM
+WAV input constraints as the converters.</p>
+<p>Use <code>python TOOL.py --help</code> for the complete argument list. For CPU costs,
+compression and listening compromises, read <a href="speaking-with-the-ts2068.html">Speaking with the TS2068</a>.</p>
+</main></body></html>

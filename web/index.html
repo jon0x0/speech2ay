@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hear speech and sound effects on a Timex Sinclair 2068. Compare ten AY codecs in a playable browser demo.">
+  <title>TS2068 Audio Lab · speech2ay</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="./">speech2ay<span> / Audio Lab</span></a><nav aria-label="Main"><a href="article.html">How it works</a><a href="https://github.com/jon0x0/speech2ay">GitHub ↗</a></nav></header>
+  <main>
+    <section class="intro"><p class="eyebrow">THREE CHANNELS. MANY WAYS TO SPEAK.</p><h1>TS2068 Audio Lab</h1><p class="lede">Hear what an AY chip can do. Compare digitized playback, harmonic synthesis, and optimized speech—running on an emulated Timex Sinclair 2068.</p></section>
+    <section class="lab" aria-label="Playable Audio Lab">
+      <div class="lab-bar"><span><i class="led" aria-hidden="true"></i> TIMEX SINCLAIR 2068</span><span id="status" role="status">Loading emulator…</span></div>
+      <div class="screen-wrap"><iframe id="emulator" src="emulator/index.html" title="TS2068 Audio Lab emulator powered by TSRun" allow="autoplay; fullscreen" allowfullscreen></iframe><div id="start-panel"><div><p class="eyebrow">READY WHEN YOU ARE</p><h2>Listen. Switch. Compare.</h2><p>Start to enable sound, then press Space to play.</p><button id="start" disabled>Loading…</button><p id="error" role="alert"></p></div></div></div>
+      <div class="controls"><div class="control-group"><span>Sample</span><button data-key="KeyO" aria-label="Previous sample">O ←</button><button data-key="KeyP" aria-label="Next sample">P →</button></div><div class="control-group"><span>Codec</span><button data-key="KeyQ" aria-label="Previous codec">Q ↑</button><button data-key="KeyA" aria-label="Next codec">A ↓</button></div><button class="play" data-key="Space">Space · Play</button><button data-key="KeyS">S · Spectra</button><button id="reset">Reset</button><button id="fullscreen">Full screen</button></div>
+      <p class="hint">Click the screen to use your keyboard. Release a key before the next action. Controls respond between clips.</p>
+    </section>
+    <section class="details"><div><p class="eyebrow">THE LISTENING SET</p><h2>Four samples, ten codecs.</h2><p>Intruder Alert · Humanoid · Player laser · Shall we play a game</p><p>Try AY4 at 5 or 6 kHz, DPCM3 at 6 kHz, harmonic and optimized synthesis with one, two, or three channels, and Audio2AY. The screen reports each clip’s stored ROM bytes.</p></div><div><p class="eyebrow">LOOK BEYOND THE WAVE</p><h2>Sound, storage, CPU time.</h2><p>The moving sine wave demonstrates animation during playback. Press S to compare the original and modeled output spectra, calculated offline. These plots show spectral shape, not a live microphone measurement.</p><a class="text-link" href="article.html">Read “Speaking with the TS2068” →</a></div></section>
+    <section class="downloads"><div><h2>Take it to your own machine.</h2><p>Download the cartridge or convert your own recordings with speech2ay.</p></div><div class="download-links"><a href="assets/TS2068-Audio-Lab.dck" download>Download DCK</a><a href="assets/TS2068-Audio-Lab-PicoROM.bin" download>Download ROM image</a><a href="https://github.com/jon0x0/speech2ay">Get the tools ↗</a></div></section>
+  </main>
+  <footer><span>Emulation by <a href="https://josef-jelinek.github.io/TSRun/">TSRun</a>, by Josef Jelinek. <a href="https://github.com/josef-jelinek/TSRun">Upstream source</a> · <a href="credits.html">Credits &amp; provenance</a></span><span><a href="https://github.com/jon0x0/speech2ay">speech2ay on GitHub ↗</a></span></footer>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "title": "TS2068 Audio Lab",
+  "samples": [
+    "Intruder Alert",
+    "Humanoid",
+    "Laser",
+    "Shall we play a game"
+  ],
+  "codecs": [
+    "ay4-5k",
+    "ay4-6k",
+    "dpcm3-6k",
+    "harmonic1",
+    "optimized1",
+    "harmonic2",
+    "optimized2",
+    "harmonic3",
+    "optimized3",
+    "audio2ay"
+  ],
+  "payload_bytes": 53187,
+  "sha256": "4cc2c969efed4f6c95c66d4ca0a7b83e820683b81fa00316609e816399b814f2"
+}
