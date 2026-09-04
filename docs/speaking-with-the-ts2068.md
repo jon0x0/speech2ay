@@ -56,7 +56,9 @@ experiments. Quiet input remains quiet; clips are not automatically trimmed.
 
 AY4 at 5 kHz keeps about 2.1 kHz of useful filtered bandwidth and costs
 2,500 bytes per second. At 6 kHz the cutoff can reach about 2.58 kHz, which
-may help consonants but costs 3,000 bytes per second. Neither retains the
+may help consonants. This means **6,000 4-bit volume samples per second**,
+packed two per byte, for **3,000 bytes per second**. At 3 kHz, the equivalent
+packed rate would be 1,500 bytes per second. Neither retains the
 full bandwidth of the original recording. DPCM3 stores changes in AY level,
 using 2,250 bytes per second at 6 kHz. It saves another quarter over AY4/6k,
 but rapid changes can exceed its small downward steps, causing slope overload
