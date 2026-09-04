@@ -190,11 +190,54 @@ The version 3 comparison cartridge additionally compresses audio streams
 losslessly using literals and LZ backreferences. It expands them into native
 RAM before playback, so the sample values, register frames and playback CPU
 costs are unchanged. Actual savings depend on the clip and codec; muted AY
-registers and repeating frames often compress well. Onscreen `ROM bytes` reports
-this stored size, while the manifest also reports the expanded stream size.
+registers and repeating frames often compress well. Unstarred onscreen `ROM bytes` reports
+this stored size; starred counts estimate a compact channel-specific format
+(see below). The manifest also reports the expanded stream size.
 The rates and ratios above describe the expanded codec format. This extra
 storage layer applies to the comparison cartridge, not standalone BIN/TAP
 exports. It adds preparation time when selecting playback, not per-frame work.
+
+
+<a id="smaller-one--and-two-channel-streams"></a>
+
+### Smaller one- and two-channel streams
+
+In TS2068 Audio Lab, an asterisk after a byte count marks a **compact-stream
+estimate**, rather than the bytes occupied by that clip in this cartridge.
+The reference player uses 14-byte frames for every channel count. A dedicated
+format could omit unused channels: two tone-period bytes and one volume byte
+per active channel, plus five shared noise, mixer and envelope bytes. That is
+**8 bytes/frame for one channel** or **11 for two**, versus 14 for three:
+42.9% and 21.4% less raw data respectively, with identical audible settings.
+
+The starred figures are calculated from the actual clips by removing those
+unused registers and applying the same lossless LZ storage rules as the demo.
+Compression savings vary with the data; already-muted registers compress well,
+so the stored reduction need not match the raw reduction. These estimates
+require an adapted loader that restores omitted channels to muted defaults,
+or a player that reads the compact format. They exclude shared code and
+metadata, just like the actual payload counts. Current BIN/TAP exports and
+the cartridge still use the common format. The manifest retains actual
+`stored_bytes` separately from `compact_estimate`.
+
+| Sample | Codec | Actual cartridge bytes | Compact estimate* |
+|---|---|---:|---:|
+| Intruder Alert | harmonic1 | 363 | 193* |
+| Intruder Alert | optimized1 | 380 | 219* |
+| Intruder Alert | harmonic2 | 432 | 333* |
+| Intruder Alert | optimized2 | 461 | 369* |
+| Humanoid | harmonic1 | 255 | 158* |
+| Humanoid | optimized1 | 283 | 172* |
+| Humanoid | harmonic2 | 294 | 256* |
+| Humanoid | optimized2 | 438 | 379* |
+| Laser | harmonic1 | 494 | 281* |
+| Laser | optimized1 | 511 | 337* |
+| Laser | harmonic2 | 574 | 462* |
+| Laser | optimized2 | 648 | 543* |
+| Shall we play a game | harmonic1 | 897 | 568* |
+| Shall we play a game | optimized1 | 940 | 614* |
+| Shall we play a game | harmonic2 | 1094 | 988* |
+| Shall we play a game | optimized2 | 1115 | 1001* |
 
 ## Searching for a better fit
 

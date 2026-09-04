@@ -18,6 +18,168 @@
     "optimized3",
     "audio2ay"
   ],
-  "payload_bytes": 53187,
-  "sha256": "4cc2c969efed4f6c95c66d4ca0a7b83e820683b81fa00316609e816399b814f2"
+  "payload_bytes": 53751,
+  "sha256": "3e99944520e5b1dc032bae83678533c918107dd6287ec2373f9dfe0670fbd2a9",
+  "size_estimates": [
+    {
+      "name": "Intruder Alert",
+      "codec": "harmonic1",
+      "stored_bytes": 363,
+      "compact_estimate": {
+        "bytes_per_frame": 8,
+        "raw_bytes": 464,
+        "stored_bytes": 193
+      }
+    },
+    {
+      "name": "Intruder Alert",
+      "codec": "optimized1",
+      "stored_bytes": 380,
+      "compact_estimate": {
+        "bytes_per_frame": 8,
+        "raw_bytes": 464,
+        "stored_bytes": 219
+      }
+    },
+    {
+      "name": "Intruder Alert",
+      "codec": "harmonic2",
+      "stored_bytes": 432,
+      "compact_estimate": {
+        "bytes_per_frame": 11,
+        "raw_bytes": 638,
+        "stored_bytes": 333
+      }
+    },
+    {
+      "name": "Intruder Alert",
+      "codec": "optimized2",
+      "stored_bytes": 461,
+      "compact_estimate": {
+        "bytes_per_frame": 11,
+        "raw_bytes": 638,
+        "stored_bytes": 369
+      }
+    },
+    {
+      "name": "Humanoid",
+      "codec": "harmonic1",
+      "stored_bytes": 255,
+      "compact_estimate": {
+        "bytes_per_frame": 8,
+        "raw_bytes": 304,
+        "stored_bytes": 158
+      }
+    },
+    {
+      "name": "Humanoid",
+      "codec": "optimized1",
+      "stored_bytes": 283,
+      "compact_estimate": {
+        "bytes_per_frame": 8,
+        "raw_bytes": 304,
+        "stored_bytes": 172
+      }
+    },
+    {
+      "name": "Humanoid",
+      "codec": "harmonic2",
+      "stored_bytes": 294,
+      "compact_estimate": {
+        "bytes_per_frame": 11,
+        "raw_bytes": 418,
+        "stored_bytes": 256
+      }
+    },
+    {
+      "name": "Humanoid",
+      "codec": "optimized2",
+      "stored_bytes": 438,
+      "compact_estimate": {
+        "bytes_per_frame": 11,
+        "raw_bytes": 418,
+        "stored_bytes": 379
+      }
+    },
+    {
+      "name": "Laser",
+      "codec": "harmonic1",
+      "stored_bytes": 494,
+      "compact_estimate": {
+        "bytes_per_frame": 8,
+        "raw_bytes": 456,
+        "stored_bytes": 281
+      }
+    },
+    {
+      "name": "Laser",
+      "codec": "optimized1",
+      "stored_bytes": 511,
+      "compact_estimate": {
+        "bytes_per_frame": 8,
+        "raw_bytes": 456,
+        "stored_bytes": 337
+      }
+    },
+    {
+      "name": "Laser",
+      "codec": "harmonic2",
+      "stored_bytes": 574,
+      "compact_estimate": {
+        "bytes_per_frame": 11,
+        "raw_bytes": 627,
+        "stored_bytes": 462
+      }
+    },
+    {
+      "name": "Laser",
+      "codec": "optimized2",
+      "stored_bytes": 648,
+      "compact_estimate": {
+        "bytes_per_frame": 11,
+        "raw_bytes": 627,
+        "stored_bytes": 543
+      }
+    },
+    {
+      "name": "Shall we play a game",
+      "codec": "harmonic1",
+      "stored_bytes": 897,
+      "compact_estimate": {
+        "bytes_per_frame": 8,
+        "raw_bytes": 1016,
+        "stored_bytes": 568
+      }
+    },
+    {
+      "name": "Shall we play a game",
+      "codec": "optimized1",
+      "stored_bytes": 940,
+      "compact_estimate": {
+        "bytes_per_frame": 8,
+        "raw_bytes": 1016,
+        "stored_bytes": 614
+      }
+    },
+    {
+      "name": "Shall we play a game",
+      "codec": "harmonic2",
+      "stored_bytes": 1094,
+      "compact_estimate": {
+        "bytes_per_frame": 11,
+        "raw_bytes": 1397,
+        "stored_bytes": 988
+      }
+    },
+    {
+      "name": "Shall we play a game",
+      "codec": "optimized2",
+      "stored_bytes": 1115,
+      "compact_estimate": {
+        "bytes_per_frame": 11,
+        "raw_bytes": 1397,
+        "stored_bytes": 1001
+      }
+    }
+  ]
 }

@@ -109,3 +109,9 @@ Laser repeats with 60 extra idle frames also remained stable: maximum AY spread 
 ## Browser demo (2026-09-04)
 
 The comparison-v8 cartridge passed all 40 sample/codec selections in the TSRun engine at revision 390ecb5d6b0dd26bf0fd1e958b25e4237369dc38: keyboard selection, audio port writes, nonzero rendered audio, playback completion, and both spectrum/menu toggles. tests/verify_tsrun.mjs accepts a local upstream checkout and the DCK path. Browser checks additionally confirmed live upstream module/ROM loading, automatic cartridge boot, the Start button, sample/codec navigation, spectrum rendering and the article link. This does not establish subjective sound quality or guarantee compatibility with future upstream changes.
+
+One- and two-channel harmonic/optimized entries in the comparison demo show
+compact-stream byte estimates with an asterisk; unstarred counts are actual
+stored payload bytes. The common playback format is unchanged. See the
+[storage explanation](./speaking-with-the-ts2068.md#smaller-one--and-two-channel-streams)
+for the calculation and actual-versus-estimated counts.

@@ -141,3 +141,9 @@ Audio2AY is optional and not bundled. The browser demo includes encoded sample
 recordings; see [credits and provenance](web/THIRD-PARTY.md). Original WAVs and
 system ROMs are not bundled. No new license is asserted over existing
 project code; establish redistribution terms before publishing to third parties.
+
+One- and two-channel harmonic/optimized entries in the comparison demo show
+compact-stream byte estimates with an asterisk; unstarred counts are actual
+stored payload bytes. The common playback format is unchanged. See the
+[storage explanation](./docs/speaking-with-the-ts2068.md#smaller-one--and-two-channel-streams)
+for the calculation and actual-versus-estimated counts.

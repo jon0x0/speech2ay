@@ -219,3 +219,9 @@ WAV input constraints as the converters.
 
 Use `python TOOL.py --help` for the complete argument list. For CPU costs,
 compression and listening compromises, read [Speaking with the TS2068](speaking-with-the-ts2068.md).
+
+One- and two-channel harmonic/optimized entries in the comparison demo show
+compact-stream byte estimates with an asterisk; unstarred counts are actual
+stored payload bytes. The common playback format is unchanged. See the
+[storage explanation](./speaking-with-the-ts2068.md#smaller-one--and-two-channel-streams)
+for the calculation and actual-versus-estimated counts.

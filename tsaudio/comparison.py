@@ -3,6 +3,7 @@ import json,math
 from pathlib import Path
 from PIL import Image,ImageDraw,ImageFont
 from .assembly import runtime
+from .size_estimates import compact_estimate, display_bytes
 from .build import assemble
 from .rle import encode as rle
 from .storage import encode as compress, decode as decompress
@@ -31,6 +32,7 @@ def artwork(names,codecs,entries,out):
         d.text((246-d.textlength(label,font=font),46),label,font=font,fill=1)
         for row,codec in enumerate(codecs[page*6:page*6+6]):
             d.text((16,62+row*16),LABELS.get(codec,codec),font=font,fill=1)
+        d.text((8,160),'* compact stream estimate',font=font,fill=1)
         im.resize((768,576)).save(out/f'base-page-{page+1}.png')
         assets.append(rle(pixels(im,7)))
     for si,name in enumerate(names):
@@ -39,7 +41,7 @@ def artwork(names,codecs,entries,out):
             d.text((8,32),f'{si+1}/{len(names)}  {name}',font=font,fill=1)
             for row,codec in enumerate(codecs[page*6:page*6+6]):
                 entry=entries[si*len(codecs)+page*6+row]
-                value=str(entry.get('stored_bytes',len(entry['data'])))
+                value=display_bytes(entry)
                 d.text((246-d.textlength(value,font=font),62+row*16),value,font=font,fill=1)
             assets.append(rle(pixels(im)))
             # Preview the actual composed menu; no substitute font.
@@ -455,6 +457,7 @@ def build_comparison(entries,out,pasmo):
         audio_blobs.append(packed if use else entry['data'])
         compression.append(int(use))
         entry['stored_bytes']=len(audio_blobs[-1])
+        entry['compact_estimate']=compact_estimate(entry)
     assets,pages=artwork(names,codecs,entries,out)
     decoded_blobs=[e['data'] for e in entries]+assets
     blobs=audio_blobs+assets
@@ -467,7 +470,7 @@ def build_comparison(entries,out,pasmo):
             heights=e['spectrum']['heights']
             if len(heights)!=64 or any(not 0<=h<=31 for h in heights):raise ValueError('Invalid spectrum heights')
             blobs.append(bytes(heights));decoded_blobs.append(bytes(heights));compression.append(0)
-            im=spectrum_ui.preview(e['name'],i//len(codecs),len(names),LABELS.get(e['codec'],e['codec']),e['stored_bytes'],heights)
+            im=spectrum_ui.preview(e['name'],i//len(codecs),len(names),LABELS.get(e['codec'],e['codec']),display_bytes(e),heights)
             screen=bytearray(pixels(im,7));screen[0x1a20:0x1aa0]=bytes([5])*128
             (out/f'spectrum-{i+1}.scr').write_bytes(screen)
             im.resize((768,576)).save(out/f'spectrum-{i+1}.png')

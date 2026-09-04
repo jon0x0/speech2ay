@@ -218,11 +218,136 @@ can dominate. Reducing the source sampling rate is not lossless compression.</p>
 losslessly using literals and LZ backreferences. It expands them into native
 RAM before playback, so the sample values, register frames and playback CPU
 costs are unchanged. Actual savings depend on the clip and codec; muted AY
-registers and repeating frames often compress well. Onscreen <code>ROM bytes</code> reports
-this stored size, while the manifest also reports the expanded stream size.
+registers and repeating frames often compress well. Unstarred onscreen <code>ROM bytes</code> reports
+this stored size; starred counts estimate a compact channel-specific format
+(see below). The manifest also reports the expanded stream size.
 The rates and ratios above describe the expanded codec format. This extra
 storage layer applies to the comparison cartridge, not standalone BIN/TAP
 exports. It adds preparation time when selecting playback, not per-frame work.</p>
+<p><a id="smaller-one--and-two-channel-streams"></a></p>
+<h3>Smaller one- and two-channel streams</h3>
+<p>In TS2068 Audio Lab, an asterisk after a byte count marks a <strong>compact-stream
+estimate</strong>, rather than the bytes occupied by that clip in this cartridge.
+The reference player uses 14-byte frames for every channel count. A dedicated
+format could omit unused channels: two tone-period bytes and one volume byte
+per active channel, plus five shared noise, mixer and envelope bytes. That is
+<strong>8 bytes/frame for one channel</strong> or <strong>11 for two</strong>, versus 14 for three:
+42.9% and 21.4% less raw data respectively, with identical audible settings.</p>
+<p>The starred figures are calculated from the actual clips by removing those
+unused registers and applying the same lossless LZ storage rules as the demo.
+Compression savings vary with the data; already-muted registers compress well,
+so the stored reduction need not match the raw reduction. These estimates
+require an adapted loader that restores omitted channels to muted defaults,
+or a player that reads the compact format. They exclude shared code and
+metadata, just like the actual payload counts. Current BIN/TAP exports and
+the cartridge still use the common format. The manifest retains actual
+<code>stored_bytes</code> separately from <code>compact_estimate</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Sample</th>
+<th>Codec</th>
+<th align="right">Actual cartridge bytes</th>
+<th align="right">Compact estimate*</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Intruder Alert</td>
+<td>harmonic1</td>
+<td align="right">363</td>
+<td align="right">193*</td>
+</tr>
+<tr>
+<td>Intruder Alert</td>
+<td>optimized1</td>
+<td align="right">380</td>
+<td align="right">219*</td>
+</tr>
+<tr>
+<td>Intruder Alert</td>
+<td>harmonic2</td>
+<td align="right">432</td>
+<td align="right">333*</td>
+</tr>
+<tr>
+<td>Intruder Alert</td>
+<td>optimized2</td>
+<td align="right">461</td>
+<td align="right">369*</td>
+</tr>
+<tr>
+<td>Humanoid</td>
+<td>harmonic1</td>
+<td align="right">255</td>
+<td align="right">158*</td>
+</tr>
+<tr>
+<td>Humanoid</td>
+<td>optimized1</td>
+<td align="right">283</td>
+<td align="right">172*</td>
+</tr>
+<tr>
+<td>Humanoid</td>
+<td>harmonic2</td>
+<td align="right">294</td>
+<td align="right">256*</td>
+</tr>
+<tr>
+<td>Humanoid</td>
+<td>optimized2</td>
+<td align="right">438</td>
+<td align="right">379*</td>
+</tr>
+<tr>
+<td>Laser</td>
+<td>harmonic1</td>
+<td align="right">494</td>
+<td align="right">281*</td>
+</tr>
+<tr>
+<td>Laser</td>
+<td>optimized1</td>
+<td align="right">511</td>
+<td align="right">337*</td>
+</tr>
+<tr>
+<td>Laser</td>
+<td>harmonic2</td>
+<td align="right">574</td>
+<td align="right">462*</td>
+</tr>
+<tr>
+<td>Laser</td>
+<td>optimized2</td>
+<td align="right">648</td>
+<td align="right">543*</td>
+</tr>
+<tr>
+<td>Shall we play a game</td>
+<td>harmonic1</td>
+<td align="right">897</td>
+<td align="right">568*</td>
+</tr>
+<tr>
+<td>Shall we play a game</td>
+<td>optimized1</td>
+<td align="right">940</td>
+<td align="right">614*</td>
+</tr>
+<tr>
+<td>Shall we play a game</td>
+<td>harmonic2</td>
+<td align="right">1094</td>
+<td align="right">988*</td>
+</tr>
+<tr>
+<td>Shall we play a game</td>
+<td>optimized2</td>
+<td align="right">1115</td>
+<td align="right">1001*</td>
+</tr>
+</tbody></table>
 <h2>Searching for a better fit</h2>
 <p><code>ayfit</code> starts with the harmonic result, then searches tone periods, volume,
 noise, mixer and envelope settings. Every candidate starts from the same
