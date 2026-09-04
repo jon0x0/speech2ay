@@ -2,6 +2,8 @@
 
 **Harmonic AY synthesis for speech and sound effects.**
 
+Tools to convert sampled audio for playback on 8-bit micros, including AY-compensated 4-bit/3-bit digitized audio and harmonic speech synthesis using 60 Hz AY parameter updates, with Z80 source code and TS2068 examples.
+
 **[Run TS2068 Audio Lab in your browser](https://jon0x0.github.io/speech2ay/)**
 
 Compare ten codecs across four samples, with animation and spectrum displays.
