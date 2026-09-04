@@ -13,7 +13,9 @@ $audio2ay = &#39;C:\tools\audio2ay\bin\audio2ay.exe&#39;
 <p>Replace these example paths with your installations. An extensionless Linux
 Pasmo executable on Windows is run through WSL. Alternatively use a native
 Pasmo executable. Every command accepts <code>--pasmo PATH</code> instead of <code>PASMO</code>.
-Only optimization requires Ayumi source and GCC (<code>--gcc PATH</code> if necessary).
+Optimization and <code>--spectra</code> require Ayumi source and GCC (<code>--gcc PATH</code> if necessary).
+Ayumi emulates the sound chip for offline rendering; see
+<a href="speaking-with-the-ts2068.html#ayumi-the-software-sound-chip">how Ayumi is used here</a>.
 Only the Audio2AY comparison requires the upstream Audio2AY executable.</p>
 <h2>Digitized audio: audio2aydac</h2>
 <p>Generate all three digitized formats with callable code at <code>$9000</code>:</p>

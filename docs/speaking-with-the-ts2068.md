@@ -241,6 +241,42 @@ the cartridge still use the common format. The manifest retains actual
 
 ## Searching for a better fit
 
+<a id="ayumi-the-software-sound-chip"></a>
+
+### Ayumi: the software sound chip
+
+[Ayumi](https://github.com/true-grue/ayumi) is an open-source C library that
+emulates the AY-3-8910 and YM2149 sound chips. Given tone periods, volumes,
+noise, mixer and envelope settings, it generates the audio samples those
+settings would produce. Here it acts as a software sound chip on the computer
+running the conversion tools.
+
+`ayfit` uses Ayumi to hear each proposed set of AY register values. Our small
+C helper renders the candidates in AY mode at 44,100 samples/second, using the
+configured chip clock and a mono mix. Python then compares the rendered
+waveform and spectrum with the source recording. Candidates start from the
+same saved chip and output-filter state, and the selected candidate's state
+continues into the next frame. This preserves tone phase, noise and envelope
+history instead of restarting the chip at every comparison. Ayumi supplies
+the sound model; the parameter search and scoring are implemented in `ayfit`.
+
+The optional `aydemo --spectra` feature also uses Ayumi to render the harmonic,
+optimized and Audio2AY register streams before calculating their displayed
+spectra. The digitized AY4/DPCM3 spectra instead use decoded nonlinear AY
+volume levels held for each sample interval. All these calculations happen
+offline; the cartridge stores the resulting spectrum bars. Our renderer adds
+the approximate TS2068 output-circuit filter described below, so the plots
+represent modeled output rather than a recording from a real speaker.
+
+Ayumi is needed for optimization and modeled spectrum generation, but ordinary
+`speech2ay` harmonic conversion and `audio2aydac` conversion do not require it.
+Pass `--ayumi` the directory containing `ayumi.c` and `ayumi.h`; GCC compiles
+the helper with those sources. Ayumi adds no Z80 playback cost or cartridge
+storage: the generated program writes the AY registers directly on the TS2068,
+and an emulator supplies its own sound-chip emulation when running the demo.
+
+### Searching the register settings
+
 `ayfit` starts with the harmonic result, then searches tone periods, volume,
 noise, mixer and envelope settings. Every candidate starts from the same
 saved AY/filter state; the chosen state continues into the next frame.
