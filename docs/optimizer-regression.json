@@ -1,0 +1,209 @@
+[
+  {
+    "sample": "Intruder Alert",
+    "codec": "optimized1",
+    "changed_frames": 0,
+    "baseline": {
+      "spectrum": 0.523302501311159,
+      "waveform": 0.5343128981900273,
+      "periodicity": 0.09427864769187833,
+      "roughness": 0.035151923740033786
+    },
+    "retained": {
+      "spectrum": 0.523302501311159,
+      "waveform": 0.5343128981900273,
+      "periodicity": 0.09427864769187833,
+      "roughness": 0.035151923740033786
+    },
+    "accepted_blocks": 0,
+    "candidate_evaluations": 3677,
+    "search_objective": "joint",
+    "acceptance_objective": "joint",
+    "passes": 3,
+    "search_mode": "conservative"
+  },
+  {
+    "sample": "Intruder Alert",
+    "codec": "optimized2",
+    "changed_frames": 1,
+    "baseline": {
+      "spectrum": 0.5165753540395069,
+      "waveform": 0.49118218041539,
+      "periodicity": 0.04245428343544045,
+      "roughness": 0.041600130691514296
+    },
+    "retained": {
+      "spectrum": 0.5144044806673135,
+      "waveform": 0.48918856734654037,
+      "periodicity": 0.041965650483607446,
+      "roughness": 0.03985148920860166
+    },
+    "accepted_blocks": 1,
+    "candidate_evaluations": 7164,
+    "search_objective": "joint",
+    "acceptance_objective": "joint",
+    "passes": 3,
+    "search_mode": "conservative"
+  },
+  {
+    "sample": "Intruder Alert",
+    "codec": "optimized3",
+    "changed_frames": 0,
+    "baseline": {
+      "spectrum": 0.5487513840187586,
+      "waveform": 0.48851656769118273,
+      "periodicity": 0.03430990366218585,
+      "roughness": 0.03820130394126182
+    },
+    "retained": {
+      "spectrum": 0.5487513840187586,
+      "waveform": 0.48851656769118273,
+      "periodicity": 0.03430990366218585,
+      "roughness": 0.03820130394126182
+    },
+    "accepted_blocks": 0,
+    "candidate_evaluations": 10526,
+    "search_objective": "joint",
+    "acceptance_objective": "joint",
+    "passes": 3,
+    "search_mode": "conservative"
+  },
+  {
+    "sample": "Humanoid",
+    "codec": "optimized1",
+    "changed_frames": 4,
+    "baseline": {
+      "spectrum": 0.30885252132344343,
+      "waveform": 0.6289089126534363,
+      "periodicity": 0.07896610846182948,
+      "roughness": 0.05611367955991727
+    },
+    "retained": {
+      "spectrum": 0.29704547510532614,
+      "waveform": 0.6159584649087803,
+      "periodicity": 0.0783030895558813,
+      "roughness": 0.04281105235641134
+    },
+    "accepted_blocks": 4,
+    "candidate_evaluations": 3030,
+    "search_objective": "joint",
+    "acceptance_objective": "joint",
+    "passes": 3,
+    "search_mode": "conservative"
+  },
+  {
+    "sample": "Humanoid",
+    "codec": "optimized2",
+    "changed_frames": 5,
+    "baseline": {
+      "spectrum": 0.24811782288087772,
+      "waveform": 0.5679298652135127,
+      "periodicity": 0.041083293390724904,
+      "roughness": 0.03593701014283265
+    },
+    "retained": {
+      "spectrum": 0.2285221743375654,
+      "waveform": 0.5512522793668201,
+      "periodicity": 0.03991278392956819,
+      "roughness": 0.022691078109704783
+    },
+    "accepted_blocks": 2,
+    "candidate_evaluations": 5182,
+    "search_objective": "joint",
+    "acceptance_objective": "joint",
+    "passes": 3,
+    "search_mode": "conservative"
+  },
+  {
+    "sample": "Humanoid",
+    "codec": "optimized3",
+    "changed_frames": 9,
+    "baseline": {
+      "spectrum": 0.20528995483577916,
+      "waveform": 0.5885256315121511,
+      "periodicity": 0.03112928995437578,
+      "roughness": 0.02364334462983849
+    },
+    "retained": {
+      "spectrum": 0.1812322607719466,
+      "waveform": 0.5562811259538833,
+      "periodicity": 0.02906597029955398,
+      "roughness": 0.017252514446174327
+    },
+    "accepted_blocks": 3,
+    "candidate_evaluations": 7406,
+    "search_objective": "joint",
+    "acceptance_objective": "joint",
+    "passes": 3,
+    "search_mode": "conservative"
+  },
+  {
+    "sample": "Shall we play a game",
+    "codec": "optimized1",
+    "changed_frames": 13,
+    "baseline": {
+      "spectrum": 0.3656870084760649,
+      "waveform": 0.47643529876965357,
+      "periodicity": 0.07073085883826823,
+      "roughness": 0.1899928044679788
+    },
+    "retained": {
+      "spectrum": 0.35114437559867717,
+      "waveform": 0.4697274187442422,
+      "periodicity": 0.06594920918171694,
+      "roughness": 0.182428962727234
+    },
+    "accepted_blocks": 4,
+    "candidate_evaluations": 9856,
+    "search_objective": "joint",
+    "acceptance_objective": "joint",
+    "passes": 3,
+    "search_mode": "conservative"
+  },
+  {
+    "sample": "Shall we play a game",
+    "codec": "optimized2",
+    "changed_frames": 2,
+    "baseline": {
+      "spectrum": 0.25516751425944156,
+      "waveform": 0.44824964538020684,
+      "periodicity": 0.036733826386915254,
+      "roughness": 0.18071547021745965
+    },
+    "retained": {
+      "spectrum": 0.2524747387073286,
+      "waveform": 0.4419166660313443,
+      "periodicity": 0.036286864644284385,
+      "roughness": 0.1745049125874274
+    },
+    "accepted_blocks": 2,
+    "candidate_evaluations": 17555,
+    "search_objective": "joint",
+    "acceptance_objective": "joint",
+    "passes": 3,
+    "search_mode": "conservative"
+  },
+  {
+    "sample": "Shall we play a game",
+    "codec": "optimized3",
+    "changed_frames": 1,
+    "baseline": {
+      "spectrum": 0.23436077241161038,
+      "waveform": 0.4367041306514256,
+      "periodicity": 0.02868911395961929,
+      "roughness": 0.15808831281856914
+    },
+    "retained": {
+      "spectrum": 0.23136690127081502,
+      "waveform": 0.43660380890973177,
+      "periodicity": 0.02860611021666779,
+      "roughness": 0.15714478390732503
+    },
+    "accepted_blocks": 1,
+    "candidate_evaluations": 25215,
+    "search_objective": "joint",
+    "acceptance_objective": "joint",
+    "passes": 3,
+    "search_mode": "conservative"
+  }
+]

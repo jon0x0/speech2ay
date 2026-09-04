@@ -26,6 +26,7 @@ def main(tool):
         p.add_argument('--gcc',default='gcc')
         p.add_argument('--passes',type=int,choices=range(1,5))
         p.add_argument('--objective',choices=['joint','spectrum'],default='joint')
+        p.add_argument('--search-mode',choices=['auto','conservative','free'],default='auto',help='auto preserves harmonic voices for filtered audio; berzerk retains unrestricted effect search')
         p.add_argument('--feedback-cutoff',type=float)
         p.add_argument('--feedback-gain',type=float,default=7.8)
     args=p.parse_args()
@@ -63,7 +64,7 @@ def main(tool):
         for path in paths:
             for codec in codecs:
                 args=configured(overrides.get(path.stem,original['profile']) if codec.startswith(('harmonic','optimized')) else 'filtered')
-                settings={k:getattr(args,k,None) for k in ['low','high','passes','objective','feedback_cutoff','feedback_gain','audio2ay','profile']}
+                settings={k:getattr(args,k,None) for k in ['low','high','passes','objective','search_mode','feedback_cutoff','feedback_gain','audio2ay','profile']}
                 dependency_hash=hashlib.sha256(b''.join(Path(__file__).with_name(n).read_bytes() for n in ['codecs.py','harmonic.py','bands.py','optimizer.py','search.py','audio2ay.py'])).hexdigest()
                 key=hashlib.sha256(path.read_bytes()+codec.encode()+json.dumps(settings,default=str,sort_keys=True).encode()+dependency_hash.encode()).hexdigest()
                 cache=args.out.resolve()/'encoded'/key;cache.mkdir(parents=True,exist_ok=True)

@@ -77,6 +77,9 @@ python aydemo.py clips --audio2ay /path/to/audio2ay.exe --format dck --out build
 All commands accept `--low`/`--high` cutoff frequencies. `ayfit` additionally
 requires GCC (`--gcc`) and the external Ayumi source directory. Its amplifier
 approximation exposes `--feedback-cutoff` and `--feedback-gain`; see the article.
+The optimizer defaults to conservative harmonic-preserving search for the
+filtered profile; `--search-mode free` enables the wider envelope/tone search.
+The Berzerk effect profile retains free search by default.
 Use `--help` on each utility for options. The Audio2AY adapter uses the upstream
 two-byte period/volume format, three channels, no arpeggio, calibrated AY clock.
 

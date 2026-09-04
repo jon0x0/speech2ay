@@ -121,4 +121,80 @@ compact-stream byte estimates with an asterisk; unstarred counts are actual
 stored payload bytes. The common playback format is unchanged. See the
 <a href="speaking-with-the-ts2068.html#smaller-one--and-two-channel-streams">storage explanation</a>
 for the calculation and actual-versus-estimated counts.</p>
+<h2>Conservative optimizer regression</h2>
+<p>The Humanoid report exposed a perceptual regression despite better average
+scores. Conservative search was tested on all nine one/two/three-channel
+speech entries (Intruder Alert, Humanoid and Shall we play a game). All retained
+results preserve mixer/envelope settings and have no worsening clip-average
+score component. The harmonic baseline was byte-identical to the previous
+demo before fitting. The Laser streams and all non-optimized streams remain
+byte-identical; only the nine optimized speech entries were regenerated.</p>
+<table>
+<thead>
+<tr>
+<th>Sample</th>
+<th align="right">Channels</th>
+<th align="right">Changed frames</th>
+<th align="right">Accepted blocks</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Intruder Alert</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>Intruder Alert</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>Intruder Alert</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>Humanoid</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+</tr>
+<tr>
+<td>Humanoid</td>
+<td align="right">2</td>
+<td align="right">5</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>Humanoid</td>
+<td align="right">3</td>
+<td align="right">9</td>
+<td align="right">3</td>
+</tr>
+<tr>
+<td>Shall we play a game</td>
+<td align="right">1</td>
+<td align="right">13</td>
+<td align="right">4</td>
+</tr>
+<tr>
+<td>Shall we play a game</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td>Shall we play a game</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+</tbody></table>
+<p>See <a href="optimizer-regression.json">recorded metrics</a> for exact before/after scores.
+These are model-based regression checks, not a claim that listening quality
+has been established. A result may legitimately retain the entire harmonic
+baseline. Rendered Humanoid A/B files were also generated at a shared gain.</p>
 </main></body></html>

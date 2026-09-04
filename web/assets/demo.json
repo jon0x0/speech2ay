@@ -18,8 +18,8 @@
     "optimized3",
     "audio2ay"
   ],
-  "payload_bytes": 53751,
-  "sha256": "3e99944520e5b1dc032bae83678533c918107dd6287ec2373f9dfe0670fbd2a9",
+  "payload_bytes": 53329,
+  "sha256": "43f6adf0328869635433de873dc78b2f68d4181fab875587fdc06b2d9b91418d",
   "size_estimates": [
     {
       "name": "Intruder Alert",
@@ -34,11 +34,11 @@
     {
       "name": "Intruder Alert",
       "codec": "optimized1",
-      "stored_bytes": 380,
+      "stored_bytes": 363,
       "compact_estimate": {
         "bytes_per_frame": 8,
         "raw_bytes": 464,
-        "stored_bytes": 219
+        "stored_bytes": 193
       }
     },
     {
@@ -54,11 +54,11 @@
     {
       "name": "Intruder Alert",
       "codec": "optimized2",
-      "stored_bytes": 461,
+      "stored_bytes": 432,
       "compact_estimate": {
         "bytes_per_frame": 11,
         "raw_bytes": 638,
-        "stored_bytes": 369
+        "stored_bytes": 333
       }
     },
     {
@@ -74,11 +74,11 @@
     {
       "name": "Humanoid",
       "codec": "optimized1",
-      "stored_bytes": 283,
+      "stored_bytes": 262,
       "compact_estimate": {
         "bytes_per_frame": 8,
         "raw_bytes": 304,
-        "stored_bytes": 172
+        "stored_bytes": 166
       }
     },
     {
@@ -94,11 +94,11 @@
     {
       "name": "Humanoid",
       "codec": "optimized2",
-      "stored_bytes": 438,
+      "stored_bytes": 303,
       "compact_estimate": {
         "bytes_per_frame": 11,
         "raw_bytes": 418,
-        "stored_bytes": 379
+        "stored_bytes": 262
       }
     },
     {
@@ -154,11 +154,11 @@
     {
       "name": "Shall we play a game",
       "codec": "optimized1",
-      "stored_bytes": 940,
+      "stored_bytes": 915,
       "compact_estimate": {
         "bytes_per_frame": 8,
         "raw_bytes": 1016,
-        "stored_bytes": 614
+        "stored_bytes": 587
       }
     },
     {
@@ -174,12 +174,13 @@
     {
       "name": "Shall we play a game",
       "codec": "optimized2",
-      "stored_bytes": 1115,
+      "stored_bytes": 1098,
       "compact_estimate": {
         "bytes_per_frame": 11,
         "raw_bytes": 1397,
-        "stored_bytes": 1001
+        "stored_bytes": 994
       }
     }
-  ]
+  ],
+  "optimizer_search": "conservative for speech; free for Laser"
 }

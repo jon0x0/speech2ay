@@ -260,8 +260,8 @@ the cartridge still use the common format. The manifest retains actual
 <tr>
 <td>Intruder Alert</td>
 <td>optimized1</td>
-<td align="right">380</td>
-<td align="right">219*</td>
+<td align="right">363</td>
+<td align="right">193*</td>
 </tr>
 <tr>
 <td>Intruder Alert</td>
@@ -272,8 +272,8 @@ the cartridge still use the common format. The manifest retains actual
 <tr>
 <td>Intruder Alert</td>
 <td>optimized2</td>
-<td align="right">461</td>
-<td align="right">369*</td>
+<td align="right">432</td>
+<td align="right">333*</td>
 </tr>
 <tr>
 <td>Humanoid</td>
@@ -284,8 +284,8 @@ the cartridge still use the common format. The manifest retains actual
 <tr>
 <td>Humanoid</td>
 <td>optimized1</td>
-<td align="right">283</td>
-<td align="right">172*</td>
+<td align="right">262</td>
+<td align="right">166*</td>
 </tr>
 <tr>
 <td>Humanoid</td>
@@ -296,8 +296,8 @@ the cartridge still use the common format. The manifest retains actual
 <tr>
 <td>Humanoid</td>
 <td>optimized2</td>
-<td align="right">438</td>
-<td align="right">379*</td>
+<td align="right">303</td>
+<td align="right">262*</td>
 </tr>
 <tr>
 <td>Laser</td>
@@ -332,8 +332,8 @@ the cartridge still use the common format. The manifest retains actual
 <tr>
 <td>Shall we play a game</td>
 <td>optimized1</td>
-<td align="right">940</td>
-<td align="right">614*</td>
+<td align="right">915</td>
+<td align="right">587*</td>
 </tr>
 <tr>
 <td>Shall we play a game</td>
@@ -344,8 +344,8 @@ the cartridge still use the common format. The manifest retains actual
 <tr>
 <td>Shall we play a game</td>
 <td>optimized2</td>
-<td align="right">1115</td>
-<td align="right">1001*</td>
+<td align="right">1098</td>
+<td align="right">994*</td>
 </tr>
 </tbody></table>
 <h2>Searching for a better fit</h2>
@@ -387,7 +387,7 @@ The normal <code>filtered</code> profile applies the source filters; the <code>b
 profile uses the unfiltered source.</p>
 <p>The search proceeds one 60.1145 Hz frame at a time (about 16.6 ms). For each
 frame it starts from the harmonic settings and tries a batch of alternatives,
-including the preceding frame&#39;s selected settings. Most alternatives change
+including, in free mode, the preceding frame&#39;s selected settings. Most alternatives change
 one setting at a time; envelope trials change several related settings
 together. Every alternative is rendered from the same saved chip/filter
 state. The lowest-scoring candidate becomes the starting point for the next
@@ -397,6 +397,29 @@ pass. After the last pass, its state is committed before moving forward.</p>
 candidate search. Extra passes increase conversion time, but leave the player
 and its update rate unchanged. This is a deterministic local search, not an
 exhaustive search or a guarantee of the best possible encoding.</p>
+<h3>Choosing the search mode</h3>
+<p><code>--search-mode auto</code> is the default. It selects <strong>conservative</strong> search for
+the normal filtered profile and <strong>free</strong> search for the Berzerk effect profile.
+Either mode can also be selected explicitly in <code>ayfit</code> or <code>aydemo</code>.</p>
+<p>Conservative search addresses an audible regression in the Humanoid sample:
+the old optimizer introduced envelopes and large tone changes that improved
+its scores but sounded worse than the harmonic baseline. The new mode keeps
+the baseline&#39;s tone/noise routing and envelope settings, never enables a
+baseline-muted voice, and searches fixed volumes 0–15 on active voices.
+Tone periods stay within <strong>±6% of that frame&#39;s original harmonic period</strong>,
+bounded to 1–4095. Each pass tries the original period, nearby integer steps
+(±1 and ±2), and baseline-relative factors 0.94, 0.98, 1.02 and 1.06.
+Anchoring to the original frame prevents successive passes drifting farther
+away. Noise periods 1–31 remain available where the baseline already uses noise.</p>
+<p>Acceptance is stricter too: <strong>none of the four clip-average error components
+may worsen</strong>, including roughness and periodicity, even when the objective is
+<code>spectrum</code>. The chosen objective must still improve strictly. If changes do
+not pass, the relevant baseline frames remain. This favors small refinements
+to a useful harmonic result; it can miss a better result requiring new voice
+assignments or envelope synthesis. Listening remains necessary: these checks
+do not measure intelligibility directly or prevent every local regression.</p>
+<p>The following wider candidate table describes <strong>free</strong> mode, retained for
+experimentation and effects. Free mode keeps its previous acceptance rules.</p>
 <h3>What it searches, and the bounds</h3>
 <table>
 <thead>
@@ -468,8 +491,9 @@ optimizer first tries replacing the whole clip, then successive four-frame
 blocks, then individual frames. Each trial is re-rendered from the beginning
 and scored across the complete clip, accounting for the state changes it
 causes later. A replacement is kept only if the current whole-clip objective
-improves. In <code>joint</code> mode, average spectral and waveform errors must also
-individually not worsen (apart from a tiny numerical tolerance). These are
+improves. In free <code>joint</code> mode, average spectral and waveform errors must also
+individually not worsen (apart from a tiny numerical tolerance). Conservative
+mode applies that requirement to all four components. These are
 clip-average safeguards; an individual frame or a listener&#39;s perception can
 still get worse. If no proposals pass, the baseline is retained.</p>
 <p>The <code>berzerk</code> profile deliberately uses spectral scoring to generate local

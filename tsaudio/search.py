@@ -25,7 +25,29 @@ class Simulator:
         self.command(3);self.p.stdin.close();self.p.stdout.close()
         assert self.p.wait(timeout=5)==0
 
-def candidates(seed,previous,f0):
+def candidates(seed,previous,f0,anchor=None):
+    # Conservative search retains the baseline voice allocation. Bound changes
+    # against the original frame, not the last pass, to prevent cumulative drift.
+    if anchor is not None:
+        result=[seed.copy()]
+        for ch in range(3):
+            if not anchor[8+ch]:
+                continue
+            period=anchor[ch*2]|(anchor[ch*2+1]<<8)
+            low=max(1,int(np.ceil(period*.94)))
+            high=min(4095,int(np.floor(period*1.06)))
+            current=seed[ch*2]|(seed[ch*2+1]<<8)
+            for p in sorted({period, *range(max(low,current-2),min(high,current+2)+1),
+                             *[int(np.clip(round(period*f),low,high)) for f in (.94,.98,1.02,1.06)]}):
+                r=seed.copy();r[ch*2:ch*2+2]=[p&255,p>>8];result.append(r)
+            for volume in range(16):
+                r=seed.copy();r[8+ch]=volume;result.append(r)
+        # Noise period may still be fitted on unvoiced frames. Mixer routing,
+        # envelope registers and all baseline-muted voices stay unchanged.
+        if any(anchor[8+c] and not (anchor[7]&(1<<(c+3))) for c in range(3)):
+            for noise in range(1,32):
+                r=seed.copy();r[6]=noise;result.append(r)
+        return [list(row) for row in dict.fromkeys(tuple(r) for r in result)]
     result=[seed.copy(),previous.copy()]
     for ch in range(3):
         period=seed[ch*2]|(seed[ch*2+1]<<8)

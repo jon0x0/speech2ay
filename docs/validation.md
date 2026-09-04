@@ -115,3 +115,30 @@ compact-stream byte estimates with an asterisk; unstarred counts are actual
 stored payload bytes. The common playback format is unchanged. See the
 [storage explanation](./speaking-with-the-ts2068.md#smaller-one--and-two-channel-streams)
 for the calculation and actual-versus-estimated counts.
+
+## Conservative optimizer regression
+
+The Humanoid report exposed a perceptual regression despite better average
+scores. Conservative search was tested on all nine one/two/three-channel
+speech entries (Intruder Alert, Humanoid and Shall we play a game). All retained
+results preserve mixer/envelope settings and have no worsening clip-average
+score component. The harmonic baseline was byte-identical to the previous
+demo before fitting. The Laser streams and all non-optimized streams remain
+byte-identical; only the nine optimized speech entries were regenerated.
+
+| Sample | Channels | Changed frames | Accepted blocks |
+|---|---:|---:|---:|
+| Intruder Alert | 1 | 0 | 0 |
+| Intruder Alert | 2 | 1 | 1 |
+| Intruder Alert | 3 | 0 | 0 |
+| Humanoid | 1 | 4 | 4 |
+| Humanoid | 2 | 5 | 2 |
+| Humanoid | 3 | 9 | 3 |
+| Shall we play a game | 1 | 13 | 4 |
+| Shall we play a game | 2 | 2 | 2 |
+| Shall we play a game | 3 | 1 | 1 |
+
+See [recorded metrics](optimizer-regression.json) for exact before/after scores.
+These are model-based regression checks, not a claim that listening quality
+has been established. A result may legitimately retain the entire harmonic
+baseline. Rendered Humanoid A/B files were also generated at a shared gain.

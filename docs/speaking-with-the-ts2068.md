@@ -223,21 +223,21 @@ the cartridge still use the common format. The manifest retains actual
 | Sample | Codec | Actual cartridge bytes | Compact estimate* |
 |---|---|---:|---:|
 | Intruder Alert | harmonic1 | 363 | 193* |
-| Intruder Alert | optimized1 | 380 | 219* |
+| Intruder Alert | optimized1 | 363 | 193* |
 | Intruder Alert | harmonic2 | 432 | 333* |
-| Intruder Alert | optimized2 | 461 | 369* |
+| Intruder Alert | optimized2 | 432 | 333* |
 | Humanoid | harmonic1 | 255 | 158* |
-| Humanoid | optimized1 | 283 | 172* |
+| Humanoid | optimized1 | 262 | 166* |
 | Humanoid | harmonic2 | 294 | 256* |
-| Humanoid | optimized2 | 438 | 379* |
+| Humanoid | optimized2 | 303 | 262* |
 | Laser | harmonic1 | 494 | 281* |
 | Laser | optimized1 | 511 | 337* |
 | Laser | harmonic2 | 574 | 462* |
 | Laser | optimized2 | 648 | 543* |
 | Shall we play a game | harmonic1 | 897 | 568* |
-| Shall we play a game | optimized1 | 940 | 614* |
+| Shall we play a game | optimized1 | 915 | 587* |
 | Shall we play a game | harmonic2 | 1094 | 988* |
-| Shall we play a game | optimized2 | 1115 | 1001* |
+| Shall we play a game | optimized2 | 1098 | 994* |
 
 ## Searching for a better fit
 
@@ -288,7 +288,7 @@ profile uses the unfiltered source.
 
 The search proceeds one 60.1145 Hz frame at a time (about 16.6 ms). For each
 frame it starts from the harmonic settings and tries a batch of alternatives,
-including the preceding frame's selected settings. Most alternatives change
+including, in free mode, the preceding frame's selected settings. Most alternatives change
 one setting at a time; envelope trials change several related settings
 together. Every alternative is rendered from the same saved chip/filter
 state. The lowest-scoring candidate becomes the starting point for the next
@@ -299,6 +299,34 @@ pass. After the last pass, its state is committed before moving forward.
 candidate search. Extra passes increase conversion time, but leave the player
 and its update rate unchanged. This is a deterministic local search, not an
 exhaustive search or a guarantee of the best possible encoding.
+
+### Choosing the search mode
+
+`--search-mode auto` is the default. It selects **conservative** search for
+the normal filtered profile and **free** search for the Berzerk effect profile.
+Either mode can also be selected explicitly in `ayfit` or `aydemo`.
+
+Conservative search addresses an audible regression in the Humanoid sample:
+the old optimizer introduced envelopes and large tone changes that improved
+its scores but sounded worse than the harmonic baseline. The new mode keeps
+the baseline's tone/noise routing and envelope settings, never enables a
+baseline-muted voice, and searches fixed volumes 0–15 on active voices.
+Tone periods stay within **±6% of that frame's original harmonic period**,
+bounded to 1–4095. Each pass tries the original period, nearby integer steps
+(±1 and ±2), and baseline-relative factors 0.94, 0.98, 1.02 and 1.06.
+Anchoring to the original frame prevents successive passes drifting farther
+away. Noise periods 1–31 remain available where the baseline already uses noise.
+
+Acceptance is stricter too: **none of the four clip-average error components
+may worsen**, including roughness and periodicity, even when the objective is
+`spectrum`. The chosen objective must still improve strictly. If changes do
+not pass, the relevant baseline frames remain. This favors small refinements
+to a useful harmonic result; it can miss a better result requiring new voice
+assignments or envelope synthesis. Listening remains necessary: these checks
+do not measure intelligibility directly or prevent every local regression.
+
+The following wider candidate table describes **free** mode, retained for
+experimentation and effects. Free mode keeps its previous acceptance rules.
 
 ### What it searches, and the bounds
 
@@ -350,8 +378,9 @@ optimizer first tries replacing the whole clip, then successive four-frame
 blocks, then individual frames. Each trial is re-rendered from the beginning
 and scored across the complete clip, accounting for the state changes it
 causes later. A replacement is kept only if the current whole-clip objective
-improves. In `joint` mode, average spectral and waveform errors must also
-individually not worsen (apart from a tiny numerical tolerance). These are
+improves. In free `joint` mode, average spectral and waveform errors must also
+individually not worsen (apart from a tiny numerical tolerance). Conservative
+mode applies that requirement to all four components. These are
 clip-average safeguards; an individual frame or a listener's perception can
 still get worse. If no proposals pass, the baseline is retained.
 

@@ -6,8 +6,16 @@ from . import search
 from .codecs import encode, source
 from .dsp import resample, read_wav
 
+def accepts(current,trial,objective,mode):
+    def total(m):
+        return m['spectrum']+(0 if objective=='spectrum' else .8*m['waveform']+.5*m['periodicity']+.1*m['roughness'])
+    guards=tuple(current) if mode=='conservative' else ('spectrum','waveform') if objective=='joint' else ()
+    return total(trial)<total(current) and all(trial[k]<=current[k]+1e-10 for k in guards)
+
 def optimize(path,channels,args,out):
     profile=getattr(args,'profile','filtered')
+    mode=getattr(args,'search_mode','auto')
+    if mode=='auto':mode='free' if profile=='berzerk' else 'conservative'
     raw,count,info=encode(path,f'harmonic{channels}',args.low,args.high,profile)
     baseline=[list(raw[i:i+14]) for i in range(0,len(raw),14)]
     search.LOW=args.low;search.HIGH=args.high
@@ -42,7 +50,8 @@ def optimize(path,channels,args,out):
             best=seed.copy()
             if any(seed[8:11]):
                 for _ in range(args.passes):
-                    choices=search.candidates(best,previous,info['analysis'][i]['f0_hz'] or 96)
+                    choices=search.candidates(best,previous,info['analysis'][i]['f0_hz'] or 96,
+                                              anchor=seed if mode=='conservative' else None)
                     for r in choices:
                         for c in range(channels,3):r[8+c]=0;r[7]|=(1<<c)|(1<<(c+3))
                     waves=sim.evaluate(choices,hi-lo);evaluations+=len(choices)
@@ -58,14 +67,14 @@ def optimize(path,channels,args,out):
                 rows.append(search.score_components(context,audio[None,lo:hi],expected))
             return {k:float(np.mean([r[k][0] for r in rows])) for k in rows[0]}
         old=metrics(reference);current=old;retained=baseline;accepted=0
-        def score(m):return m['spectrum']+(0 if args.objective=='spectrum' else .8*m['waveform']+.5*m['periodicity']+.1*m['roughness'])
         for size in [count,4,1]:
             for lo in range(0,count,size):
                 hi=min(count,lo+size);trial=[r.copy() for r in retained];trial[lo:hi]=proposal[lo:hi]
                 if trial==retained:continue
                 m=metrics(search.render(sim,trial))
-                if score(m)<score(current) and (args.objective!='joint' or all(m[k]<=current[k]+1e-10 for k in ('spectrum','waveform'))):
+                if accepts(current,m,args.objective,mode):
                     retained=trial;current=m;accepted+=1
         info['optimizer']={'baseline':old,'retained':current,'accepted_blocks':accepted,'candidate_evaluations':evaluations,'search_objective':search.OBJECTIVE,'acceptance_objective':args.objective,'passes':args.passes}
+        info['optimizer']['search_mode']=mode
         return bytes(v for r in retained for v in r),count,info
     finally:sim.close()

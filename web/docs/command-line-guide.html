@@ -48,6 +48,16 @@ for candidate ranges, scoring, acceptance checks, limitations and future improve
 <pre><code class="language-powershell">python ayfit.py &#39;voice.wav&#39; --channels 3 --ayumi $ayumi --passes 3 --objective joint --format tap dck --out build/voice-fit
 python ayfit.py &#39;laser.wav&#39; --channels 2 --ayumi $ayumi --passes 2 --objective spectrum --low 80 --high 6500 --format bin --separate-data --data-origin 0xd000 --out build/laser-fit
 </code></pre>
+<p><code>--search-mode auto</code> (default) uses conservative search with the filtered
+profile and free search with the Berzerk effect profile. Conservative mode
+preserves voice routing, avoids new envelopes, limits tone-period changes to
+±6% of the baseline, and rejects any worsening clip-average score component.
+Use <code>free</code> explicitly to explore the wider search:</p>
+<pre><code class="language-powershell">python ayfit.py &#39;Humanoid.wav&#39; --channels 3 --ayumi $ayumi --search-mode conservative --high 6500 --format dck --out build/humanoid-conservative
+python ayfit.py &#39;Humanoid.wav&#39; --channels 3 --ayumi $ayumi --search-mode free --high 6500 --format dck --out build/humanoid-free
+</code></pre>
+<p>The same WAV and cutoffs make these a controlled comparison. The mode is
+recorded in optimizer metadata and included in the conversion cache key.</p>
 <p><code>--passes</code> accepts 1–4, default 3. More passes cost conversion time, without
 changing playback CPU cost. <code>joint</code> uses waveform and spectral criteria;
 <code>spectrum</code> emphasizes spectral matching. Acceptance checks can retain the
