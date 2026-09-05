@@ -113,10 +113,14 @@ bytes per interrupt; the eight LDIR copies alone add 2648 T (4.51% of a frame),
 plus address/control overhead, to the audio-only budget below. Thus the
 roughly 97% available figure describes the reference player without animation.
 
-## Harmonic synthesis: the AY performs the ongoing work
+## Harmonic sound synthesis: the AY performs the ongoing work
 
-`speech2ay` estimates pitch and fits square-wave harmonic templates to the
-recording's spectrum. A band/noise model handles less periodic portions. One
+`speech2ay` divides the recording into roughly 60 Hz frames, estimates pitch
+and spectral energy, then chooses AY tone periods and volume levels whose square
+waves—including their unavoidable odd harmonics—approximate that spectrum. A
+shared-noise model handles less periodic portions. This is **harmonic sound
+matching**: it reproduces selected spectral features with the sound chip rather
+than reconstructing the original sampled waveform. One
 channel has very little ability to separate pitch from speech formants; two
 or three give more freedom. Sound effects can also work well when their
 important features resemble tones, harmonics or noise. Complex transients

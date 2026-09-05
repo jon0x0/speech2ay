@@ -1,9 +1,9 @@
 # speech2ay
 
-**Harmonic AY synthesis for speech and sound effects.**
+**Harmonic AY sound synthesis for speech and sound effects.**
 
 Tools to convert sampled audio for playback on 8-bit micros, including AY-compensated 4-bit digitized audio, a DPCM3 format that stores
-3-bit deltas for reconstructed 4-bit samples, and harmonic speech synthesis using 60 Hz AY parameter updates, with Z80 source code and TS2068 examples. The TS2068 contains a General Instrument **AY-3-8912 Programmable Sound Generator (PSG)**.
+3-bit deltas for reconstructed 4-bit samples, and harmonic sound synthesis using 60 Hz AY parameter updates, with Z80 source code and TS2068 examples. The TS2068 contains a General Instrument **AY-3-8912 Programmable Sound Generator (PSG)**.
 
 **[Run TS2068 Audio Lab in your browser](https://jon0x0.github.io/speech2ay/)**
 
@@ -18,9 +18,11 @@ storage, while the chip has only three tone channels and a shared noise
 generator for synthesis. We want recognizable speech and sound effects that
 leave enough CPU time and memory for the rest of a game or application.
 
-`speech2ay` analyzes short sections of a recording, estimates their pitch, and
-fits combinations of AY square-wave harmonics to their frequency spectrum.
-A band/noise model handles less periodic sounds, including unvoiced speech.
+`speech2ay` performs **harmonic sound synthesis**. It divides a recording into
+short frames, estimates pitch and spectral energy, then chooses AY tone periods
+and volume levels whose square waves and their odd harmonics approximate that
+spectrum. A shared-noise model handles less periodic sounds, including unvoiced
+speech.
 It produces settings for one, two, or three AY channels. The optional `ayfit`
 tool searches for better register settings using synthesized audio to compare
 waveform and spectral errors against the recording.

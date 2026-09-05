@@ -42,8 +42,10 @@ AY4 stores two 4-bit samples per byte. DPCM3 stores eight 3-bit deltas in
 three bytes. The sample rates are fixed by the codec name; there is no
 arbitrary rate switch. These players block until playback finishes.
 
-## Harmonic synthesis: speech2ay
+## Harmonic sound synthesis: speech2ay
 
+`speech2ay` analyzes short frames and selects tone periods and volumes whose
+AY square waves and odd harmonics approximate the source pitch and spectrum.
 Choose one, two or three AY channels:
 
 ```powershell
