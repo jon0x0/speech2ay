@@ -2,7 +2,7 @@
 
 **Harmonic AY synthesis for speech and sound effects.**
 
-Tools to convert sampled audio for playback on 8-bit micros, including AY-compensated 4-bit/3-bit digitized audio and harmonic speech synthesis using 60 Hz AY parameter updates, with Z80 source code and TS2068 examples.
+Tools to convert sampled audio for playback on 8-bit micros, including AY-compensated 4-bit/3-bit digitized audio and harmonic speech synthesis using 60 Hz AY parameter updates, with Z80 source code and TS2068 examples. The TS2068 contains a General Instrument **AY-3-8912 Programmable Sound Generator (PSG)**.
 
 **[Run TS2068 Audio Lab in your browser](https://jon0x0.github.io/speech2ay/)**
 
