@@ -68,14 +68,14 @@ A T-state (T) is one CPU clock cycle; this article uses T-states to measure play
 
 | Mode | Payload bytes/s | Nominal sample spacing | Decode/output work* | Available instruction budget* |
 |---|---:|---|---:|---:|
-| AY4 5 kHz | 2,500 | 705, 706, 705, 706, 706 T | 9.16% | 90.84% |
+| AY4 5 kHz | 2,500 | 705.6 T average | 9.16% | 90.84% |
 | AY4 6 kHz | 3,000 | 588 T | 13.44% | 86.56% |
 | DPCM3 6 kHz | 2,250 | 588 T | 24.53% | 75.47% |
 
-*These percentages describe replaceable instruction budget, **not free time
-automatically returned to your program**. The supplied blocking DAC routines
-use all elapsed CPU time: useful work plus calibrated padding, with interrupts
-disabled. They return only at the end of a clip. You can replace padding with
+*These percentages describe instruction slots where calibrated padding could
+be replaced with useful work. The supplied blocking DAC routines still occupy
+the CPU for the entire clip, with interrupts disabled, and return only when
+playback finishes. You can replace padding with
 equal-cycle bounded work; you cannot call an arbitrary game loop there.
 Setup, final stop, contention and animation are excluded from the percentages.
 

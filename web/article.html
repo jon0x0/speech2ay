@@ -67,7 +67,7 @@ and extra distortion. It is a different compromise, not a free quality win.</p>
 <tbody><tr>
 <td>AY4 5 kHz</td>
 <td align="right">2,500</td>
-<td>705, 706, 705, 706, 706 T</td>
+<td>705.6 T average</td>
 <td align="right">9.16%</td>
 <td align="right">90.84%</td>
 </tr>
@@ -86,10 +86,10 @@ and extra distortion. It is a different compromise, not a free quality win.</p>
 <td align="right">75.47%</td>
 </tr>
 </tbody></table>
-<p>*These percentages describe replaceable instruction budget, <strong>not free time
-automatically returned to your program</strong>. The supplied blocking DAC routines
-use all elapsed CPU time: useful work plus calibrated padding, with interrupts
-disabled. They return only at the end of a clip. You can replace padding with
+<p>*These percentages describe instruction slots where calibrated padding could
+be replaced with useful work. The supplied blocking DAC routines still occupy
+the CPU for the entire clip, with interrupts disabled, and return only when
+playback finishes. You can replace padding with
 equal-cycle bounded work; you cannot call an arbitrary game loop there.
 Setup, final stop, contention and animation are excluded from the percentages.</p>
 <p>The arithmetic uses the actual 3.528 MHz TS2068 CPU: 3,528,000/5,000=705.6 T
