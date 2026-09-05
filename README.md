@@ -227,9 +227,8 @@ distinguishes assembled, emulator-tested and physically untested behavior.
 
 The DSP, harmonic estimator and optimizer are extracted and generalized from
 this project's tested speech experiments. They do not import their originals.
-The packed playback/export layer and DPCM3 stream format are new; DPCM3 is
-**not binary-compatible** with earlier Berzerk speech packages. The optimizer
-worker uses external Ayumi; its license remains with that dependency. Upstream
+The optimizer worker uses external Ayumi; its license remains with that
+dependency. Upstream
 Audio2AY is optional and not bundled. The browser demo includes encoded sample
 recordings; see [credits and provenance](web/THIRD-PARTY.md). Original WAVs and
 system ROMs are not bundled. No new license is asserted over existing
