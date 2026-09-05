@@ -28,8 +28,10 @@ Only the Audio2AY comparison requires the upstream Audio2AY executable.</p>
 three bytes. The sample rates are fixed by the codec name; there is no
 arbitrary rate switch. These players block until playback finishes.</p>
 <h2>Harmonic sound synthesis: speech2ay</h2>
-<p><code>speech2ay</code> analyzes short frames and selects tone periods and volumes whose
-AY square waves and odd harmonics approximate the source pitch and spectrum.
+<p><code>speech2ay</code> performs AY-constrained harmonic-plus-noise analysis/resynthesis:
+it analyzes short frames and selects tone periods, volumes and shared-noise
+settings whose AY square waves and odd harmonics approximate the changing pitch
+and spectrum of sampled audio.
 Choose one, two or three AY channels:</p>
 <pre><code class="language-powershell">python speech2ay.py &#39;voice.wav&#39; --channels 1 --format tap --out build/voice-one-channel
 python speech2ay.py &#39;laser.wav&#39; --channels 2 --format dck --out build/laser-two-channel

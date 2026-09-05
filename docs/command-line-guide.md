@@ -44,8 +44,10 @@ arbitrary rate switch. These players block until playback finishes.
 
 ## Harmonic sound synthesis: speech2ay
 
-`speech2ay` analyzes short frames and selects tone periods and volumes whose
-AY square waves and odd harmonics approximate the source pitch and spectrum.
+`speech2ay` performs AY-constrained harmonic-plus-noise analysis/resynthesis:
+it analyzes short frames and selects tone periods, volumes and shared-noise
+settings whose AY square waves and odd harmonics approximate the changing pitch
+and spectrum of sampled audio.
 Choose one, two or three AY channels:
 
 ```powershell

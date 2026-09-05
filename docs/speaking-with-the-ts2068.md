@@ -118,10 +118,16 @@ roughly 97% available figure describes the reference player without animation.
 `speech2ay` divides the recording into roughly 60 Hz frames, estimates pitch
 and spectral energy, then chooses AY tone periods and volume levels whose square
 waves—including their unavoidable odd harmonics—approximate that spectrum. A
-shared-noise model handles less periodic portions. This is **harmonic sound
-matching**: it reproduces selected spectral features with the sound chip rather
-than reconstructing the original sampled waveform. One
-channel has very little ability to separate pitch from speech formants; two
+shared-noise model handles less periodic portions. More technically, this is
+**AY-constrained harmonic-plus-noise analysis/resynthesis**: it analyzes a
+recording, represents selected periodic and aperiodic features with AY tones
+and noise, and resynthesizes an approximation rather than reconstructing the
+original sampled waveform. Harmonic-plus-noise is an established family of
+speech models; this implementation is a much smaller, square-wave-based AY
+adaptation with only three tone channels and one shared noise generator. See
+[Harmonic Plus Noise Models for Speech](https://www.ee.columbia.edu/~dpwe/classes/e6820-2007-05/papers/Styl01-hnm.pdf).
+
+One channel has very little ability to separate pitch from speech formants; two
 or three give more freedom. Sound effects can also work well when their
 important features resemble tones, harmonics or noise. Complex transients
 and natural voices can become buzzy, robotic or less intelligible. Generating
