@@ -73,11 +73,64 @@ compensated for its nonlinear, approximately logarithmic volume levels. AY4
 stores 4-bit sample codes; DPCM3 stores 3-bit differences that reconstruct those
 4-bit DAC codes, rather than changing the chip into a 3-bit DAC.
 
-`speech2ay` fits speech and sound effects to harmonic AY synthesis parameters
-that can be played with **60 Hz parameter updates**. `ayfit` searches for further
-improvements using spectrum, waveform, roughness and periodicity criteria.
-Its acceptance checks can retain the harmonic baseline; an improved numerical
-fit does not guarantee better listening quality.
+`speech2ay` fits speech and sound effects to harmonic AY parameters that can
+be played with **60 Hz parameter updates**.
+
+## What ayfit can improve
+
+`ayfit` takes the initial `speech2ay` register stream and searches for AY tone,
+volume, mixer, noise and envelope settings that more closely reproduce the
+source. It uses [Ayumi](https://github.com/true-grue/ayumi) as a software
+AY-3-8910/AY-3-8912 sound model: candidates are rendered at 44.1 kHz while
+preserving tone phase, noise, envelope and modeled output-filter state between
+frames. The rendered result is compared with the recording using four criteria:
+
+- **Spectrum:** distribution of energy through 48 logarithmic frequency bands,
+  including an RMS-level penalty.
+- **Waveform:** phase-tolerant correlation within a bounded ±5 ms offset.
+- **Periodicity:** autocorrelation structure that helps preserve voiced pitch
+  and repeating sound effects.
+- **Roughness:** the rate of sample-to-sample change, helping reject unwanted
+  harsh or noisy results.
+
+For normal filtered audio, conservative search preserves the harmonic model's
+voice routing and envelope choices, restricts tone-period movement to ±6%, and
+accepts a change only when none of the four whole-clip error measures worsens.
+It may keep some or all of the harmonic baseline. `--search-mode free` enables
+a wider search over periods, mixer routing and envelopes; the `berzerk` effect
+profile selects that mode by default. One to four passes trade conversion time
+for search depth. Optimization occurs offline and does not add work to the Z80
+player or increase its 60 Hz update rate.
+
+### Results seen so far
+
+The checked Audio Lab regression set contains nine optimized combinations from
+three speech clips at one, two and three channels. Conservative search retained
+changes in seven and left two unchanged. Among the seven changed entries, the
+recorded error reductions were:
+
+| Criterion | Observed reduction |
+|---|---:|
+| Spectrum | **0.4–11.7%** |
+| Waveform | **0.02–5.5%** |
+| Periodicity | **0.3–6.8%** |
+| Roughness | **0.6–36.9%** |
+
+For Humanoid with three channels, spectrum error fell **11.7%**, waveform error
+**5.5%**, periodicity error **6.6%**, and roughness error **27.0%**, while only
+9 of 38 parameter frames changed. Earlier unrestricted optimization changed all
+38 frames and introduced 21 envelope restarts; it scored better numerically but
+sounded worse. That failure led to the conservative mode and its no-regression
+checks.
+
+Listening tests have also found cases where `ayfit` removes undesirable tones
+from synthesized speech. This is a useful capability, but it is source-dependent
+and is not measured directly by the four percentages above. A lower model error
+does not guarantee clearer or more natural speech, so compare the baseline and
+optimized versions by ear. Exact regression data is in
+[`docs/optimizer-regression.json`](docs/optimizer-regression.json); the
+[full optimizer description](docs/speaking-with-the-ts2068.md#how-the-optimizer-searches)
+documents its candidate bounds, scoring and acceptance process.
 
 Requires Python 3.10+, `pip install -r requirements.txt`, and Pasmo. Set
 `PASMO` to the assembler executable or pass `--pasmo PATH`. On Windows, an
