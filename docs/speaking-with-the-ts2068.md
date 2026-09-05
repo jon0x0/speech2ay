@@ -120,8 +120,12 @@ recording's spectrum. A band/noise model handles less periodic portions. One
 channel has very little ability to separate pitch from speech formants; two
 or three give more freedom. Sound effects can also work well when their
 important features resemble tones, harmonics or noise. Complex transients
-and natural voices can become buzzy, robotic or less intelligible. Listening
-to the actual samples matters more than assuming a codec ranking.
+and natural voices can become buzzy, robotic or less intelligible. Generating
+speech from a few AY square-wave voices remains very limiting, so success
+depends strongly on the source material. A recording whose important speech
+features fall near frequencies and harmonic combinations the AY can reproduce
+is more likely to work well. Listening to the actual samples matters more than
+assuming a codec ranking.
 
 The player receives one register frame per 60.1145 Hz display interrupt.
 Between updates the AY runs by itself. The current straightforward reference
@@ -411,6 +415,12 @@ complete amplifier/speaker response and omits diode and speaker nonlinearities.
 
 These are development possibilities, not features of the current tools:
 
+- **Prepare the source for the AY.** Experiment with equalization, selective
+  harmonic enhancement, pitch adjustment, dynamic-range control or separating
+  voiced and unvoiced material before conversion. The aim would be to strengthen
+  useful spectral content inside the AY's reproducible frequency range without
+  discarding consonants or creating misleading optimizer gains. Compare every
+  treatment by listening as well as spectrum and waveform measurements.
 - **Search several frames together.** Retain a small set of promising paths
   and evaluate upcoming frames before choosing one. This could improve
   envelope continuity and fast laser sweeps that a greedy frame decision misses.
