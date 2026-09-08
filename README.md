@@ -163,10 +163,24 @@ four-sample comparison build.
 
 ## TS2068 Audio Lab
 
-`aydemo` generates codec comparisons as TAP programs or TS2068 cartridge images
-for a real or emulated machine. Switch between samples and codecs, play each
-version, and optionally view an original-versus-modeled spectrum comparison
-in the expanded cartridge demo.
+Give `aydemo.py` a few WAV files and it will generate a **TS2068 Audio Lab**
+cartridge image that can run on a real TS2068 or in emulators such as Fuse and
+[TSRun](https://josef-jelinek.github.io/TSRun/). With harmonic and optimized
+one-, two- and three-channel versions plus Audio2AY, the generated menu provides
+**10 codec options** for every sample:
+
+```sh
+python aydemo.py voice.wav effect.wav --optimize 1 2 3 --ayumi /path/to/ayumi --audio2ay /path/to/audio2ay --spectra --format dck --out build/audio-lab
+```
+
+The ten choices are AY4 at 5 kHz, AY4 at 6 kHz, DPCM3 at 6 kHz, harmonic1,
+optimized1, harmonic2, optimized2, harmonic3, optimized3, and Audio2AY. The
+`--spectra` option adds the original-versus-modeled spectrum display. Omit
+`--audio2ay` when that external converter is unavailable; the resulting menu
+then has nine choices. `aydemo` can also generate TAP output.
+
+Switch between samples and codecs and play each version on a real or emulated
+machine.
 
 The moving sine-wave animation continues during playback to demonstrate that
 audio can coexist with other work. Digitized playback has a strict sample
