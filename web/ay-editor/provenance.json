@@ -1,0 +1,15 @@
+{
+  "ay_core": "TSRun/ay.js, copied unchanged for local standalone preview",
+  "sha256": "0991fa826f4d430b37900aac09081d7f147e389fe680eb6adebf732ba914895f",
+  "gunshot": {
+    "source": "https://freesound.org/people/fastson/sounds/50618/",
+    "author": "fastson",
+    "license": "CC BY 3.0",
+    "onset_seconds": 7.374240362811792,
+    "method": "Stateful speech2ay/Ayumi noise-only search: 31 noise periods x 16 fixed volumes per frame; spectral/energy and periodicity cost",
+    "frames": 30,
+    "register_sha256": "a49295e629beb76d0279e367cadd37ed2cac8c711ee11811094786578f8ab533",
+    "origin": "Sinistar assets/sfx-player-impact-real.ay, accepted full decay",
+    "adaptation": "Cropped, level-adjusted recording fitted to AY channel-A noise/fixed volume; no PCM recording bundled."
+  }
+}

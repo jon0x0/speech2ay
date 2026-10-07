@@ -1,0 +1,65 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AY Sound Workshop · speech2ay</title><link rel="stylesheet" href="../style.css"></head><body><header class="site-header"><a class="brand" href="../index.html">speech2ay<span> / Audio Lab</span></a><nav><a href="../ay-editor/">AY Sound Workshop</a><a href="../index.html">Audio Lab</a></nav></header><main class="article"><h1>AY Sound Workshop</h1>
+<p>The general-purpose browser player and parameter editor lives in
+<code>web/ay-editor/</code>. It was developed for Sinistar&#39;s roar and effects, then adapted
+for speech2ay with a selected gunshot example, synthetic starter sounds and register-data import. It does not
+require the game, its recordings, a cartridge, system ROMs or a running emulator.</p>
+<p>Run <code>python -m http.server 8000 --directory web</code> from speech2ay, then open
+<code>http://localhost:8000/ay-editor/</code>. Use HTTP/localhost or HTTPS so module workers
+and Web Audio are available. Click Play to activate audio. Node 22+ can run the
+renderer/format checks with <code>npm run test:ay-editor</code>.</p>
+<h2>Load, edit and audition</h2>
+<p>The default starting sound is the accepted 30-frame (0.499-second) Sinistar
+gunshot noise fit, opened on Noise period with looping off. Existing autosave
+can restore another session; select the gunshot or use <code>?preset=real-gunshot-full</code>
+when switching to it. Tone, sweep, noise decay and envelope examples remain
+available, or choose <strong>Import registers</strong>. Imports accept a JSON array of register rows, an object with <code>rows</code>,
+or raw binary frames: exactly fourteen bytes R0 through R13 per frame. The limit
+is 1-3,600 frames. There is no header, compression or sample-rate metadata. Use
+only decompressed harmonic/register output at the timing below; DAC data,
+compressed cartridge streams, WAV input and ZXAYEMUL <code>.ay</code> programs are different
+formats. This editor modifies parameters; it does not perform the WAV-to-AY fit.</p>
+<p>Draw a curve, drag a straight line, set/smooth/restore a selected range, or enter
+numeric values. Select a time interval for looped audition; Play once disables
+looping. Compare against <strong>Hear starting version</strong>. Undo/redo records edit gestures;
+Reset restores the starting sound. Editing during playback rerenders in a worker
+and crossfades the replacement at the current playback position. Stale worker
+responses cannot replace newer edits. Automatic audition can be disabled.</p>
+<p>Controls include relative tone pitch (50-150%), individual A/B/C tone frequencies,
+fixed volumes 0-15 or envelope volume 16, shared noise period, per-channel tone/noise
+routing, and shared envelope period/shape. Pitch changes tone dividers only.
+Disabling both tone and noise produces a constant level, not a mute; use volume 0.
+R13=255 (shown as shape -1) means skip the envelope write; shapes 0-15 restart it
+on every frame where they are written. Preserve that distinction when drawing.</p>
+<h2>Save and export</h2>
+<p>Save project writes versioned JSON with current/base rows, pitch curves, selection
+and selected track. Load project accepts this schema, including Sinistar v1 project
+files. Browser autosave is convenience storage for the last session; download JSON
+for a durable editable copy. Opening a new starter/import replaces that session.</p>
+<p>Export WAV writes the whole edited sample as mono 44.1 kHz, 16-bit PCM, using a
+fixed output scale. Monitor gain affects listening only, without per-edit WAV
+normalization. Export AY registers writes <code>ay-sound-edited.registers.bin</code>: raw
+14-byte compiled frames with pitch edits applied and the R13 skip sentinel intact.
+Loop selection does not trim exports. Cartridge packing and player compatibility
+must be checked separately; a reduced channel/noise format cannot automatically
+represent arbitrary routing or envelopes. Exports do not modify any cartridge.</p>
+<h2>Timing, model and implementation</h2>
+<p>The inherited TS2068 preset uses CPU 3,528,000 T/s and 58,688 T per update
+(about 60.1145 Hz). The local TSRun AY core models a 1.764 MHz AY clock, integrated
+44.1 kHz sampling and an amplifier RC filter; the mixed output adds a 20 Hz DC
+blocker. It preserves oscillator/noise/envelope state between parameter frames.
+This differs from the toolkit&#39;s 1.764750 MHz Ayumi optimizer model: browser output
+is an audition model, not byte-exact Ayumi audio or measured physical sound.
+Timing/clock selection is fixed in this version, not inferred from imported data.</p>
+<p><code>editor.mjs</code> owns interaction, undo and playback; <code>formats.mjs</code> validates imports
+and projects; <code>synth.mjs</code> compiles pitch, renders and exports WAV; <code>worker.mjs</code>
+isolates rendering; <code>ay-core.mjs</code> is an unchanged TSRun <code>ay.js</code> snapshot. Its SHA-256
+is in <code>provenance.json</code>. See <code>web/THIRD-PARTY.md</code> for attribution. The default gunshot retains the accepted Sinistar register rows; the other
+starter parameters are synthetic examples. The fit adapts RemingtonGunshot.wav
+by fastson (<a href="https://freesound.org/people/fastson/sounds/50618/">source</a>,
+<a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>), cropped and level
+adjusted before noise/volume fitting. No source PCM is bundled.</p>
+<p>Checks cover exact unedited exports, raw/JSON/project roundtrips, invalid inputs,
+one-frame duration, finite samples, WAV structure, pitch, level, silence, noise,
+envelope progression and R13 skip behavior. Browser interaction and subjective
+listening are separate checks; modeled tests do not establish hardware fidelity.</p>
+</main></body></html>

@@ -1,0 +1,8 @@
+{
+  "presets": 5,
+  "byteExactUneditedExport": true,
+  "pitchRatio": 1.098360655737705,
+  "silenceVolumeNoiseEnvelopeTests": true,
+  "maxRenderMs": 23.03949999999999,
+  "importAndProjectRoundtrips": true
+}

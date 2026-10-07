@@ -1,10 +1,18 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Credits and provenance · speech2ay</title><link rel="stylesheet" href="style.css"></head><body><header class="site-header"><a class="brand" href="index.html">speech2ay<span> / Audio Lab</span></a><nav><a href="index.html">Play the demo</a><a href="https://github.com/jon0x0/speech2ay">GitHub ↗</a></nav></header><main class="article"><h1>Credits and provenance</h1>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Credits and provenance · speech2ay</title><link rel="stylesheet" href="style.css"></head><body><header class="site-header"><a class="brand" href="index.html">speech2ay<span> / Audio Lab</span></a><nav><a href="ay-editor/">AY Sound Workshop</a><a href="index.html">Audio Lab</a></nav></header><main class="article"><h1>Credits and provenance</h1>
 <p>Browser emulation is provided by Josef Jelinek&#39;s
 <a href="https://github.com/josef-jelinek/TSRun">TSRun</a>. Its emulator modules, audio mixer,
 shaders and system ROMs load directly from the
 <a href="https://josef-jelinek.github.io/TSRun/">live TSRun site</a>.
-This repository contains only the page adapter, not a copy of the emulator or
-its ROMs. See the upstream repository for their terms and provenance.</p>
+The Audio Lab uses the page adapter without bundling emulator modules or ROMs.
+The separate AY Sound Workshop in <code>ay-editor/</code> contains one unchanged local copy
+of TSRun&#39;s <code>ay.js</code> as <code>ay-core.mjs</code>, inherited from the Sinistar editor; its hash is
+recorded in <code>ay-editor/provenance.json</code>. It needs no system ROM. See the upstream
+repository for the core&#39;s terms and provenance; this project grants no new license
+for that dependency. Workshop includes the accepted Sinistar 30-frame gunshot AY fit, adapted from
+<a href="https://freesound.org/people/fastson/sounds/50618/">RemingtonGunshot.wav by fastson</a>
+under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>. The recording was
+cropped and level-adjusted before noise/volume fitting; no source PCM is bundled.
+The other starter sounds are synthetic parameter examples.</p>
 <p>The adapter adds automatic cartridge loading, audio activation and Audio Lab
 controls. Initially checked against upstream revision
 390ecb5d6b0dd26bf0fd1e958b25e4237369dc38; the deployed page follows the live site.</p>

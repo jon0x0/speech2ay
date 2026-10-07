@@ -4,8 +4,16 @@ Browser emulation is provided by Josef Jelinek's
 [TSRun](https://github.com/josef-jelinek/TSRun). Its emulator modules, audio mixer,
 shaders and system ROMs load directly from the
 [live TSRun site](https://josef-jelinek.github.io/TSRun/).
-This repository contains only the page adapter, not a copy of the emulator or
-its ROMs. See the upstream repository for their terms and provenance.
+The Audio Lab uses the page adapter without bundling emulator modules or ROMs.
+The separate AY Sound Workshop in `ay-editor/` contains one unchanged local copy
+of TSRun's `ay.js` as `ay-core.mjs`, inherited from the Sinistar editor; its hash is
+recorded in `ay-editor/provenance.json`. It needs no system ROM. See the upstream
+repository for the core's terms and provenance; this project grants no new license
+for that dependency. Workshop includes the accepted Sinistar 30-frame gunshot AY fit, adapted from
+[RemingtonGunshot.wav by fastson](https://freesound.org/people/fastson/sounds/50618/)
+under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). The recording was
+cropped and level-adjusted before noise/volume fitting; no source PCM is bundled.
+The other starter sounds are synthetic parameter examples.
 
 The adapter adds automatic cartridge loading, audio activation and Audio Lab
 controls. Initially checked against upstream revision

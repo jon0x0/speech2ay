@@ -1,5 +1,9 @@
 # TS2068 Audio Lab on GitHub Pages
 
+The separate [AY Sound Workshop](ay-editor.md) at `web/ay-editor/` is a general-purpose
+register player and curve editor adapted from Sinistar. It uses a local standalone
+AY core; the live-module emulator integration below describes Audio Lab only.
+
 [Play the demo](https://jon0x0.github.io/speech2ay/) ·
 [Source repository](https://github.com/jon0x0/speech2ay)
 

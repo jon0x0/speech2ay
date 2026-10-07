@@ -1,5 +1,14 @@
 # speech2ay
 
+## Browser AY Sound Workshop
+
+The general-purpose player and curve editor developed in Sinistar is now available
+in `web/ay-editor/`. Import raw AY register frames or JSON, edit tone/noise/volume
+and envelope curves, audition changes against the starting sound, and export an
+editable project, WAV or register stream. It includes synthetic starter sounds
+and runs without game assets or system ROMs. See the [workshop guide](docs/ay-editor.md)
+for local startup, formats, timing and validation.
+
 **Harmonic sound synthesis for speech and sound effects.**
 
 `speech2ay` uses **AY-constrained harmonic-plus-noise analysis/resynthesis**:
